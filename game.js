@@ -12,6 +12,7 @@ UJAPP.vmax = 5.0;
 window.onload = function() {
 	//start crafty
 	Crafty.init(UJAPP.W, UJAPP.H);
+	//Crafty.canvas.init(UJAPP.W, UJAPP.H);
 	Crafty.viewport.init();
 	Crafty.scene("loading");
 	//Crafty.pause();
@@ -120,10 +121,10 @@ Crafty.scene("jackpot", function() {
 		w : Crafty.viewport.width,
 		h : Crafty.viewport.height
 	}).image(img + ".png", "no-repeat");
-	Crafty.background(bg);
-	Crafty.e("HTML, Keyboard")
-	   .attr({x:20, y:70, w:180, h:UJAPP.H-10})
-	   .replace("<textarea style='width: 170px;height: 620px; background-color: #000;'></textarea>");
+	//Crafty.background(bg);
+	// Crafty.e("HTML, Keyboard")
+	   // .attr({x:20, y:70, w:180, h:UJAPP.H-10})
+	   // .replace("<textarea style='width: 170px;height: 620px; background-color: #000;'></textarea>");
 	Crafty.e("2D, DOM, Text, cueBallTotal")
 		.attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
@@ -133,7 +134,9 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 640, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 			{
-				Crafty.e("Ball, ball31").attr({ x:700, y:400});
+				var e = Crafty.e("Ball, ball31").attr({ x:700, y:400});
+				e.p.x = 700;
+				e.p.y = 400;
 				Crafty("cueBallTotal").text(Crafty("ball31").length);
 			}
 		)
@@ -150,7 +153,14 @@ Crafty.scene("jackpot", function() {
 		.line(4);
 	Crafty.e("2D, DOM, bt_add, Button")
 		.attr( { x : 800, y : UJAPP.H-90, w : 34, h : 34} )
-		.line(5);	
+		.bind("Click", function()
+		{
+			var total = Crafty("Player").length;
+			var e = Crafty.e("Ball, Player, ball" + ((total % 31)+1)).attr({ x:700, y:400});
+			e.p.x = 700;
+			e.p.y = 400;
+		})
+		.line(5);
 	Crafty.e("2D, DOM, bt_remove, Button")
 		.attr( { x : 840, y : UJAPP.H-90, w : 34, h : 34} )
 		.line(6);
@@ -164,9 +174,13 @@ Crafty.scene("jackpot", function() {
 		.bind("Click", function(){ pause()})
 		.setModeOnOff(true);
 		
-	players = 30;
+	players = 10;
 	for (var i = 0; i < players; i++){
-		b = Crafty.e("Ball, ball" + ((i % 31)+1));
+		b = Crafty.e("Ball, Player, ball" + ((i % 31)+1));
+		Crafty.e("2D, DOM, Text")
+			.attr({x: 30, y:100+(i*25), w:200, h: 20})
+			.css({"font-size":"10px"})
+			.text(function(){return "pos: "+Crafty("ball"+(i+1)).p});
 	}
 	
 	Crafty("cueBallTotal").text(Crafty("ball31").length);
@@ -202,47 +216,97 @@ Crafty.c("Ball",{
 	init: function()
 	{
 		this.addComponent("2D, DOM, Collision");
-		this.attr({ x: Crafty.math.randomInt(200, UJAPP.W-43), y: Crafty.math.randomInt(70, UJAPP.H-123), z:1, dX: Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax), dY: Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax) });
-		this.bind('EnterFrame', detectCollision)
+		this.v = new Crafty.math.Vector2D(0,0);//velocity
+		this.p = new Crafty.math.Vector2D(0,0);//position
+		this.r = 13; //raio
+		this.v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
+		this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax); 
+		this.p.x = Crafty.math.randomInt(200 + this.r, UJAPP.W-43);
+		this.p.y = Crafty.math.randomInt(70 + this.r, UJAPP.H-123);
+		this.attr({x: this.p.x - this.r , y: this.p.y - this.r });
+		this.bind('EnterFrame', update)
 		this.bind('KeyDown', function(e)
 		{
-			if(e.key == Crafty.keys['PAGE_UP']) 
-		     	this.dX = this.dX + 1;
-		    else if(e.key == Crafty.keys['PAGE_DOWN'])
-		     	this.dX = this.dX + 1;
+			if(e.key == Crafty.keys['PAGE_UP']){
+		     	this.v.y = 1;
+		     	this.v.x = 0;
+			} 
+		    else if(e.key == Crafty.keys['PAGE_DOWN']){
+		     	this.v.x = 0;
+		     	this.v.y = -1;
+		     }
 			else if(e.key == Crafty.keys['SPACE']){
-		     	this.dX = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
-		     	this.dY = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);					
+		     	this.v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
+		     	this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);					
 			};
 		});
 	}
 });
 
-function detectCollision(){
+function update(){
 	if(UJAPP.PAUSE) return;
-	if(this.x < 200){		
-		this.dX = -this.dX;
-		this.x = 200;
-	}
-	if(this.x > UJAPP.W-43){
-		this.dX = -this.dX;
-		this.x = UJAPP.W-43;	
-	}
-	if(this.y < 70){
-		this.dY = -this.dY;
-		this.y = 70;		
-	}
-	if(this.y > UJAPP.H-123){
-		this.dY = -this.dY;
-		this.y = UJAPP.H-123;
+	var ent = Crafty("Ball").length;
+	
+	for(i=1; i<=ent; i++){
+		for(j=i; j<=ent; j++){
+			if( isCollided( Crafty('ball'+i), Crafty("ball"+j)) ){
+				collitionEffect(Crafty('ball'+i), Crafty("ball"+j) )
+			}
+		}
 	}
 	
-	this.x += this.dX;
-	this.y += this.dY;
+	if(this.p.x < 200 + this.r){		
+		this.v.x = -this.v.x;
+		this.p.x = 200 + this.r;
+	}
+	if(this.p.x > (UJAPP.W-21 - this.r)){
+		this.v.x = -this.v.x;
+		this.p.x = (UJAPP.W-21 - this.r);	
+	}
+	if(this.p.y < 70+ this.r){
+		this.v.y = -this.v.y;
+		this.p.y = 70+ this.r;		
+	}
+	if(this.p.y > UJAPP.H-102 - this.r){
+		this.v.y = -this.v.y;
+		this.p.y = UJAPP.H-102 - this.r;
+	}
+		
+	this.p = this.p.add(this.v);
+	this.x = this.p.x - this.r;
+	this.y = this.p.y - this.r;
 }
 
 function isCollided(b1, b2){
-	return false;
+	if(b1 == b2) return false;
+	
+	return (b1.p.distanceSq(b2.p) < (b1.r+b2.r)*(b1.r+b2.r));
+}
+
+function collitionEffect(b1, b2){
+	direction = new Crafty.math.Vector2D(b2.p);
+	direction = direction.subtract(b1.p);
+	direction = direction.normalize();
+	//2 corpos nao ocupam o mesmo lugar no espaco.
+	positionB2 = new Crafty.math.Vector2D(b1.p);
+	positionB2 = positionB2.add( direction.scaleToMagnitude(1+(b1.r+b2.r)) ); 
+	b2.p.x = positionB2.x;
+	b2.p.y = positionB2.y;
+	
+	//conservacao de energia
+	direction = direction.normalize();
+	f1 = b1.v.dotProduct(direction);
+	f2 = b2.v.dotProduct(direction);
+	
+	velo = new Crafty.math.Vector2D(b1.v);
+	velo = velo.subtract(direction.scaleToMagnitude(f1-f2));
+	b1.v.x = velo.x;
+	b1.v.y = velo.y;
+
+	velo = new Crafty.math.Vector2D(b2.v);
+	velo = velo.add(direction.scaleToMagnitude(f1-f2));
+	b2.v.x = velo.x;
+	b2.v.y = velo.y;
 }
 
 function pause(){
@@ -252,9 +316,7 @@ function pause(){
 function randomVelocity(){
 	var ent = Crafty("Collision");
 	for(i=0; i<ent.length; i++){
-		Crafty(ent[i]).attr({
-			dX: Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax),
-			dY: Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax)
-		})
+		Crafty(ent[i]).v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
+		Crafty(ent[i]).v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
 	}
 }
