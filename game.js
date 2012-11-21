@@ -37,12 +37,23 @@ Crafty.scene("loading", function() {
 	});
 	
 	Crafty.audio.add("hit", "hit.wav");
+	Crafty.audio.add("ploc", "kill2.wav");
+	Crafty.audio.add("go", "go.wav");
 	
 	Crafty.sprite(74, 74, "start.png", {
 		bt_start:  [0,0],
 		bt_start_over:  [1,0],
 		bt_start_clicked:  [2,1],
 		bt_start_on:  [3,1]
+	});
+
+	Crafty.sprite(26, 26, "explosions2.png", {
+		x0:  [0,0],
+		x1:  [0,1],
+		x2:  [0,2],
+		x3:  [0,3],
+		x4:  [0,4],
+		x5:  [0,5]
 	});
 	
 	Crafty.sprite(34, 34, "buttons.png", {
@@ -64,7 +75,7 @@ Crafty.scene("loading", function() {
 		bt_menu_over:[1,7]
 	});
 	
-	Crafty.sprite(26, 26, "ball2.png", {
+	Crafty.sprite(26, 26, "ball3.png", {
 		ball1:  [0,0],
 		ball2:  [0,1],
 		ball3:  [0,2],
@@ -95,7 +106,8 @@ Crafty.scene("loading", function() {
 		ball28: [4,3],
 		ball29: [4,4],
 		ball30: [4,5],
-		ball31: [5,0]		/*ball1:  [0,0],
+		ball31: [5,0]
+		/*ball1:  [0,0],
 		ball2:  [1,0],
 		ball3:  [2,0],
 		ball4:  [3,0],
@@ -115,16 +127,16 @@ Crafty.scene("loading", function() {
 });
 
 Crafty.scene("splash", function() {
-	Crafty.viewport.scale(900/500);
+	Crafty.viewport.scale(window.innerHeight/500);
 	var bg = Crafty.e("2D, DOM, Image, Mouse")
 		.image("splash_800x500.png", "no-repeat")
-		.bind('Click', function(){ Crafty.scene("jackpot") });  
+		.bind('Click', function(){ Crafty.scene("jackpot") }); 
 	Crafty.background(bg);
 	UJAPP.players = [];
 });
 
 Crafty.scene("jackpot", function() {
-	Crafty.viewport.scale(1.125);
+	Crafty.viewport.scale(window.innerWidth/1280);
 	var img = "jackpot_1280x800";// + Crafty.viewport.width + "x" + Crafty.viewport.height;
 	var bg = Crafty.e("2D, DOM, Image").attr({
 		w : Crafty.viewport.width,
@@ -151,9 +163,19 @@ Crafty.scene("jackpot", function() {
 				Crafty("cueBallTotal").text(Crafty("ball31").length);
 			}
 		)
-		.line(1);
+		.line(1)
+		.soundFile('go');
 	Crafty.e("2D, DOM, bt_sound, Button")
 		.attr( { x : 680, y : UJAPP.H-90, w : 34, h : 34} )
+		.bind("Click", function()
+		{
+			var e = Crafty.e("Ball, Player, ball" + ((UJAPP.players.length % 30)+1)).attr({ x:700, y:400});
+			UJAPP.players.push(e);
+			e.p.x = 700;
+			e.p.y = 400;
+			e.v.x = UJAPP.players.length % 2 * 8 + 1;
+			e.v.y = 0;
+		})
 		.line(2);
 	Crafty.e("2D, DOM, bt_random, Button")
 		.attr( { x : 720, y : UJAPP.H-90, w : 34, h : 34} )
@@ -178,7 +200,7 @@ Crafty.scene("jackpot", function() {
 		{
 			var last = UJAPP.players.pop();
 			last.destroy();
-		})
+		})	
 		.line(6);
 	Crafty.e("2D, DOM, bt_menu, Button")
 		.attr( { x : 880, y : UJAPP.H-90, w : 34, h : 34} )
@@ -195,7 +217,7 @@ Crafty.scene("jackpot", function() {
 		Crafty.e("2D, DOM, Text")
 			.attr({x: 30, y:100+(i*25), w:200, h: 20})
 			.css({"font-size":"10px"})
-			.text(function(){return "vel("+ UJAPP.players[i].v.x +", "+ UJAPP.players[i].v.x+")"});
+			.text(function(){return "vel("+ UJAPP.players[i].v.x +", "+ UJAPP.players[i].v.y+")"});
 	}
 	
 	Crafty("cueBallTotal").text(Crafty("ball31").length);
@@ -221,16 +243,16 @@ Crafty.c("Button",{
 		this.bind('MouseOver', function(){ if(!this._state) this.sprite(1, this._line); })
 		this.bind('MouseOut', function(){ if(!this._state) this.sprite(0, this._line); })
 	},
-	line: function(l) { this._line = l;},
-	soundFile: function(sf) { this._sound = sf; },
-	setModeOnOff: function(b) { this._onOff = b}
+	line: function(l) { this._line = l; return this;},
+	soundFile: function(sf) { this._sound = sf; return this; },
+	setModeOnOff: function(b) { this._onOff = b; return this;}
 });
 
 Crafty.c("Ball",{
 	_state: UJAPP.READY,
 	init: function()
 	{
-		this.addComponent("2D, DOM");
+		this.addComponent("2D, DOM, SpriteAnimation, x0");
 		this.v = new Crafty.math.Vector2D(0,0);//velocity
 		this.p = new Crafty.math.Vector2D(0,0);//position
 		this.r = 13; //raio
@@ -238,12 +260,16 @@ Crafty.c("Ball",{
 		// this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax); 
 		this.v.x = randomRange(UJAPP.vmin, UJAPP.vmax);
 		this.v.y = randomRange(UJAPP.vmin, UJAPP.vmax); 
-		
+		this.animate('explode', [[0,6], [1,6], [2,6], [3,6], [4,6], [5,6], 
+								 [0,7], [1,7], [2,7], [3,7], [4,7], [5,7], 
+								 [0,8], [1,8], [2,8], [3,8], [4,8], [5,8]]);
+
 		this.p.x = Crafty.math.randomInt(200 + this.r, UJAPP.W-43);
 		this.p.y = Crafty.math.randomInt(70 + this.r, UJAPP.H-123);
 		this.attr({x: this.p.x - this.r , y: this.p.y - this.r });
 		this.collidded = false;
 		this.type = UJAPP.PLAYER;
+
 		this.bind('EnterFrame', update)
 		this.bind('KeyDown', function(e)
 		{
@@ -304,8 +330,10 @@ function update(){
 }
 
 function isCollided(b1, b2){
+	if(b1.status == UJAPP.DYING && !b1.isPlaying()) b1.destroy();
+	if(b2.status == UJAPP.DYING && !b2.isPlaying()) b2.destroy();
 	if(b1 == b2) return false;
-	if(b1.status == UJAPP.DEAD || b2.status == UJAPP.DEAD ) return false;
+	if(b1.status == UJAPP.DEAD || b2.status == UJAPP.DEAD || b1.status == UJAPP.DYING || b2.status == UJAPP.DYING ) return false;
 	if(b1.collided && b2.collided) return false;
 	
 	if(b1.p.distanceSq(b2.p) < (b1.r+b2.r)*(b1.r+b2.r)){
@@ -317,52 +345,43 @@ function isCollided(b1, b2){
 }
 
 function collitionEffect(b1, b2){
-	direction = new Crafty.math.Vector2D(b2.p);
-	direction = direction.subtract(b1.p);
-	direction = direction.normalize();
+	normal = new Crafty.math.Vector2D(b2.p.x - b1.p.x, b2.p.y - b1.p.y);
+	normal.normalize();
 	//2 corpos nao ocupam o mesmo lugar no espaco.
-	positionB2 = new Crafty.math.Vector2D(b1.p);
-	positionB2 = positionB2.add( direction.scaleToMagnitude(1+(b1.r+b2.r)) ); 
-	b2.p.x = positionB2.x;
-	b2.p.y = positionB2.y;
+	b2.p.x = b1.p.x + scaleVector(normal, (b1.r+b2.r) ).x;
+	b2.p.y = b1.p.y + scaleVector(normal, (b1.r+b2.r) ).y;
 
 	//conservacao de energia
-	direction = direction.normalize();
-	f1 = b1.v.dotProduct(direction);
-	f2 = b2.v.dotProduct(direction);
+	f1 = b1.v.dotProduct(normal);
+	f2 = b2.v.dotProduct(normal);
 	
 	velo = new Crafty.math.Vector2D(b1.v);
-	velo = velo.subtract(direction.scaleToMagnitude(f1-f2));
-	b1.v.x = velo.x;
-	b1.v.y = velo.y;
-	
-	direction = direction.normalize();
-	velo = new Crafty.math.Vector2D(b2.v);
-	velo = velo.add(direction.scaleToMagnitude(f1-f2));
-	b2.v.x = velo.x;
-	b2.v.y = velo.y;
+	b1.v.subtract(scaleVector(normal, (f1-f2)));
+	b2.v.add(scaleVector(normal, (f1-f2)));
 	
 	if( (b1.type == UJAPP.KILLER || b2.type == UJAPP.KILLER) ){
 		if(!(b1.type == UJAPP.KILLER)){
-			b1.destroy();
-			b1.status = UJAPP.DEAD;		
+			b1.status = UJAPP.DYING;	
+			Crafty.audio.play('ploc');
+			b1.animate('explode', 15, 0);
 		}
 		if(!(b2.type == UJAPP.KILLER)){
-			b2.destroy();
-			b2.status = UJAPP.DEAD;
-		}			
+			b2.status = UJAPP.DYING;
+			Crafty.audio.play('ploc');
+			b2.animate('explode', 15, 0);
+		}	
 	}
 	
 
 //a fisica esta estourando. limitacao forcada :(
-	if(b1.v.x > 2*UJAPP.vmax) b1.v.x = 2*UJAPP.vmax;
+	/*if(b1.v.x > 2*UJAPP.vmax) b1.v.x = 2*UJAPP.vmax;
 	if(b1.v.x < 2*UJAPP.vmin) b1.v.x = 2*UJAPP.vmin;
 	if(b1.v.y > 2*UJAPP.vmax) b1.v.y = 2*UJAPP.vmax;
 	if(b1.v.y < 2*UJAPP.vmin) b1.v.y = 2*UJAPP.vmin;
 	if(b2.v.x > 2*UJAPP.vmax) b2.v.x = 2*UJAPP.vmax;
 	if(b2.v.x < 2*UJAPP.vmin) b2.v.x = 2*UJAPP.vmin;
 	if(b2.v.y > 2*UJAPP.vmax) b2.v.y = 2*UJAPP.vmax;
-	if(b2.v.y < 2*UJAPP.vmin) b2.v.y = 2*UJAPP.vmin;
+	if(b2.v.y < 2*UJAPP.vmin) b2.v.y = 2*UJAPP.vmin;*/
 }
 
 function pause(){
@@ -379,4 +398,8 @@ function randomVelocity(){
 
 function randomRange(min, max){
 	return min + (max-min) * Math.random();
+}
+
+function scaleVector(v1, k){
+	return new Crafty.math.Vector2D(v1.x*k, v1.y*k);
 }
