@@ -5,9 +5,17 @@ UJAPP.prize = 1;
 UJAPP.READY = 0;
 UJAPP.RUNNING = 1;
 UJAPP.DYING = 2;
+UJAPP.DEAD = 3;
+UJAPP.PLAYER = 0;
+UJAPP.KILLER = 1;
 UJAPP.PAUSE = true;
 UJAPP.vmin = -5.0;
 UJAPP.vmax = 5.0;
+UJAPP.totalPlayers = 10;
+UJAPP.totalKillers = 0;
+UJAPP.framePerUpdate = 4;
+UJAPP.frameAtual = 0;
+UJAPP.players = [];
 
 window.onload = function() {
 	//start crafty
@@ -112,6 +120,7 @@ Crafty.scene("splash", function() {
 		.image("splash_800x500.png", "no-repeat")
 		.bind('Click', function(){ Crafty.scene("jackpot") });  
 	Crafty.background(bg);
+	UJAPP.players = [];
 });
 
 Crafty.scene("jackpot", function() {
@@ -137,6 +146,8 @@ Crafty.scene("jackpot", function() {
 				var e = Crafty.e("Ball, ball31").attr({ x:700, y:400});
 				e.p.x = 700;
 				e.p.y = 400;
+				e.type = UJAPP.KILLER;
+				UJAPP.players.push(e);
 				Crafty("cueBallTotal").text(Crafty("ball31").length);
 			}
 		)
@@ -155,14 +166,19 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 800, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 		{
-			var total = Crafty("Player").length;
-			var e = Crafty.e("Ball, Player, ball" + ((total % 31)+1)).attr({ x:700, y:400});
+			var e = Crafty.e("Ball, Player, ball" + ((UJAPP.players.length % 30)+1)).attr({ x:700, y:400});
+			UJAPP.players.push(e);
 			e.p.x = 700;
 			e.p.y = 400;
 		})
 		.line(5);
 	Crafty.e("2D, DOM, bt_remove, Button")
 		.attr( { x : 840, y : UJAPP.H-90, w : 34, h : 34} )
+		.bind("Click", function()
+		{
+			var last = UJAPP.players.pop();
+			last.destroy();
+		})
 		.line(6);
 	Crafty.e("2D, DOM, bt_menu, Button")
 		.attr( { x : 880, y : UJAPP.H-90, w : 34, h : 34} )
@@ -174,13 +190,12 @@ Crafty.scene("jackpot", function() {
 		.bind("Click", function(){ pause()})
 		.setModeOnOff(true);
 		
-	players = 10;
-	for (var i = 0; i < players; i++){
-		b = Crafty.e("Ball, Player, ball" + ((i % 31)+1));
+	for (var i = 0; i < UJAPP.totalPlayers; i++){
+		UJAPP.players[i] = ( Crafty.e("Ball, Player, ball" + ((i % 31)+1)) );
 		Crafty.e("2D, DOM, Text")
 			.attr({x: 30, y:100+(i*25), w:200, h: 20})
 			.css({"font-size":"10px"})
-			.text(function(){return "pos: "+Crafty("ball"+(i+1)).p});
+			.text(function(){return "vel("+ UJAPP.players[i].v.x +", "+ UJAPP.players[i].v.x+")"});
 	}
 	
 	Crafty("cueBallTotal").text(Crafty("ball31").length);
@@ -215,15 +230,20 @@ Crafty.c("Ball",{
 	_state: UJAPP.READY,
 	init: function()
 	{
-		this.addComponent("2D, DOM, Collision");
+		this.addComponent("2D, DOM");
 		this.v = new Crafty.math.Vector2D(0,0);//velocity
 		this.p = new Crafty.math.Vector2D(0,0);//position
 		this.r = 13; //raio
-		this.v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
-		this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax); 
+		// this.v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
+		// this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax); 
+		this.v.x = randomRange(UJAPP.vmin, UJAPP.vmax);
+		this.v.y = randomRange(UJAPP.vmin, UJAPP.vmax); 
+		
 		this.p.x = Crafty.math.randomInt(200 + this.r, UJAPP.W-43);
 		this.p.y = Crafty.math.randomInt(70 + this.r, UJAPP.H-123);
 		this.attr({x: this.p.x - this.r , y: this.p.y - this.r });
+		this.collidded = false;
+		this.type = UJAPP.PLAYER;
 		this.bind('EnterFrame', update)
 		this.bind('KeyDown', function(e)
 		{
@@ -236,8 +256,8 @@ Crafty.c("Ball",{
 		     	this.v.y = -1;
 		     }
 			else if(e.key == Crafty.keys['SPACE']){
-		     	this.v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
-		     	this.v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);					
+		     	this.v.x = randomRange(UJAPP.vmin, UJAPP.vmax);
+		     	this.v.y = randomRange(UJAPP.vmin, UJAPP.vmax);					
 			};
 		});
 	}
@@ -245,16 +265,22 @@ Crafty.c("Ball",{
 
 function update(){
 	if(UJAPP.PAUSE) return;
-	var ent = Crafty("Ball").length;
+	UJAPP.frameAtual = UJAPP.frameAtual + 1;
 	
-	for(i=1; i<=ent; i++){
-		for(j=i; j<=ent; j++){
-			if( isCollided( Crafty('ball'+i), Crafty("ball"+j)) ){
-				collitionEffect(Crafty('ball'+i), Crafty("ball"+j) )
+	if(UJAPP.frameAtual >= UJAPP.framePerUpdate){
+		UJAPP.frameAtual = 0;
+		for(var i=0; i<UJAPP.players.length; i++){
+			UJAPP.players[i].collided = false;
+		}
+		for(var i=0; i<UJAPP.players.length; i++){
+			for(var j=i; j<UJAPP.players.length; j++){
+				if( isCollided( UJAPP.players[i], UJAPP.players[j]) ) {
+					collitionEffect(UJAPP.players[i], UJAPP.players[j] )
+				}
 			}
 		}
 	}
-	
+		
 	if(this.p.x < 200 + this.r){		
 		this.v.x = -this.v.x;
 		this.p.x = 200 + this.r;
@@ -279,8 +305,15 @@ function update(){
 
 function isCollided(b1, b2){
 	if(b1 == b2) return false;
+	if(b1.status == UJAPP.DEAD || b2.status == UJAPP.DEAD ) return false;
+	if(b1.collided && b2.collided) return false;
 	
-	return (b1.p.distanceSq(b2.p) < (b1.r+b2.r)*(b1.r+b2.r));
+	if(b1.p.distanceSq(b2.p) < (b1.r+b2.r)*(b1.r+b2.r)){
+		b1.collided = true;
+		b2.collided = true;
+		return true;
+	}
+	return false;
 }
 
 function collitionEffect(b1, b2){
@@ -292,7 +325,7 @@ function collitionEffect(b1, b2){
 	positionB2 = positionB2.add( direction.scaleToMagnitude(1+(b1.r+b2.r)) ); 
 	b2.p.x = positionB2.x;
 	b2.p.y = positionB2.y;
-	
+
 	//conservacao de energia
 	direction = direction.normalize();
 	f1 = b1.v.dotProduct(direction);
@@ -302,11 +335,34 @@ function collitionEffect(b1, b2){
 	velo = velo.subtract(direction.scaleToMagnitude(f1-f2));
 	b1.v.x = velo.x;
 	b1.v.y = velo.y;
-
+	
+	direction = direction.normalize();
 	velo = new Crafty.math.Vector2D(b2.v);
 	velo = velo.add(direction.scaleToMagnitude(f1-f2));
 	b2.v.x = velo.x;
 	b2.v.y = velo.y;
+	
+	if( (b1.type == UJAPP.KILLER || b2.type == UJAPP.KILLER) ){
+		if(!(b1.type == UJAPP.KILLER)){
+			b1.destroy();
+			b1.status = UJAPP.DEAD;		
+		}
+		if(!(b2.type == UJAPP.KILLER)){
+			b2.destroy();
+			b2.status = UJAPP.DEAD;
+		}			
+	}
+	
+
+//a fisica esta estourando. limitacao forcada :(
+	if(b1.v.x > 2*UJAPP.vmax) b1.v.x = 2*UJAPP.vmax;
+	if(b1.v.x < 2*UJAPP.vmin) b1.v.x = 2*UJAPP.vmin;
+	if(b1.v.y > 2*UJAPP.vmax) b1.v.y = 2*UJAPP.vmax;
+	if(b1.v.y < 2*UJAPP.vmin) b1.v.y = 2*UJAPP.vmin;
+	if(b2.v.x > 2*UJAPP.vmax) b2.v.x = 2*UJAPP.vmax;
+	if(b2.v.x < 2*UJAPP.vmin) b2.v.x = 2*UJAPP.vmin;
+	if(b2.v.y > 2*UJAPP.vmax) b2.v.y = 2*UJAPP.vmax;
+	if(b2.v.y < 2*UJAPP.vmin) b2.v.y = 2*UJAPP.vmin;
 }
 
 function pause(){
@@ -314,9 +370,13 @@ function pause(){
 }
 
 function randomVelocity(){
-	var ent = Crafty("Collision");
+	var ent = Crafty("Ball");
 	for(i=0; i<ent.length; i++){
-		Crafty(ent[i]).v.x = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
-		Crafty(ent[i]).v.y = Crafty.math.randomInt(UJAPP.vmin, UJAPP.vmax);
+		Crafty(ent[i]).v.x = randomRange(UJAPP.vmin, UJAPP.vmax);
+		Crafty(ent[i]).v.y = randomRange(UJAPP.vmin, UJAPP.vmax);
 	}
+}
+
+function randomRange(min, max){
+	return min + (max-min) * Math.random();
 }
