@@ -157,7 +157,7 @@ function collitionEffect(b1, b2){
 	f1 = b1.v.dotProduct(normal);
 	f2 = b2.v.dotProduct(normal);
 	
-	velo = new Crafty.math.Vector2D(b1.v);
+	//velo = new Crafty.math.Vector2D(b1.v);
 	b1.v.subtract(scaleVector(normal, (f1-f2)));
 	b2.v.add(scaleVector(normal, (f1-f2)));
 	
@@ -173,17 +173,6 @@ function collitionEffect(b1, b2){
 			b2.animate('explode', 15, 0);
 		}	
 	}
-	
-
-//a fisica esta estourando. limitacao forcada :(
-	/*if(b1.v.x > 2*UJAPP.vmax) b1.v.x = 2*UJAPP.vmax;
-	if(b1.v.x < 2*UJAPP.vmin) b1.v.x = 2*UJAPP.vmin;
-	if(b1.v.y > 2*UJAPP.vmax) b1.v.y = 2*UJAPP.vmax;
-	if(b1.v.y < 2*UJAPP.vmin) b1.v.y = 2*UJAPP.vmin;
-	if(b2.v.x > 2*UJAPP.vmax) b2.v.x = 2*UJAPP.vmax;
-	if(b2.v.x < 2*UJAPP.vmin) b2.v.x = 2*UJAPP.vmin;
-	if(b2.v.y > 2*UJAPP.vmax) b2.v.y = 2*UJAPP.vmax;
-	if(b2.v.y < 2*UJAPP.vmin) b2.v.y = 2*UJAPP.vmin;*/
 }
 
 function pause(){
