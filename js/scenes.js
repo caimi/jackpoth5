@@ -120,11 +120,12 @@ Crafty.scene("names", function() {
 	Crafty.e("2D, DOM, Button, mn_voltar")
 		.attr({x: 304, y: 350})
 		.line(4)
-		.bind('Click', function(){ alert(document.getElementsByClassName('TEXTAREA').value); Crafty.scene("splash") }); 
-	Crafty.e("HTML, Keyboard, Persist")
+		.bind('Click', function(){ UJAPP.names = linesToArray(document.getElementsByTagName('TEXTAREA')[0].value); Crafty.scene("splash") }); 
+	Crafty.e("HTML, Keyboard")
 		.attr({x: 25, y: 250})
-		.replace("<form><textarea style='background-color: 0.1; border:0'></textarea></form>")
+		.replace("<form><textarea style='background-color: 0.1; border:0'>Miguel\nDavi\nGabriel\nArthur\nLucas\nMatheus\nPedro\nGuilherme\nGustavo\nRafael</textarea></form>")
 	UJAPP.players = [];
+	
 });
 
 Crafty.scene("opcoes", function() {
@@ -253,17 +254,20 @@ Crafty.scene("jackpot", function() {
 		.bind("Click", function(){ pause()})
 		.setModeOnOff(true);
 		
-	Crafty.e("2D, DOM, Text")
-			.attr({x: 30, y:400, w:200, h: 20})
-			.css({"font-size":"10px"})
-			.text("Names:" + UJAPP.names);	
+	// Crafty.e("2D, DOM, Text")
+			// .attr({x: 30, y:400, w:200, h: 20})
+			// .css({"font-size":"10px"})
+			// .text("Names:" + UJAPP.names);	
 	
-	for (var i = 0; i < UJAPP.totalPlayers; i++){
+	for (var i = 0; i < UJAPP.names.length; i++){
 		UJAPP.players[i] = ( Crafty.e("Ball, Player, ball" + ((i % 31)+1)) );
-		Crafty.e("2D, DOM, Text")
-			.attr({x: 30, y:100+(i*25), w:200, h: 20})
-			.css({"font-size":"10px"})
-			.text(function(){return "vel("+ UJAPP.players[i].v.x +", "+ UJAPP.players[i].v.y+")"});
+		if(75+i*25 < UJAPP.H-100) {
+			Crafty.e("2D, DOM, Text")
+				.attr({x: 25, y:75+(i*25), w:200, h: 20})
+				.css({"font-size":"20px"})
+				.textColor(UJAPP.colors[i])
+				.text(function(){return UJAPP.names[i]});
+		}
 	}
 	
 	Crafty("cueBallTotal").text(Crafty("cueBall").length);

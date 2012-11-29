@@ -15,6 +15,36 @@ UJAPP.totalPlayers = 10;
 UJAPP.totalKillers = 0;
 UJAPP.framePerUpdate = 0;
 UJAPP.frameAtual = 0;
+UJAPP.colors = ['f0c700', 
+'d70000', 
+'00b600', 
+'00dddd', 
+'007cf3', 
+'eb00eb', 
+'f0e395', 
+'f59595', 
+'aedb14', 
+'c5fdfd', 
+'10bde1', 
+'ffc4ff', 
+'efa600', 
+'b00d0d', 
+'0f9d0f', 
+'009d9d', 
+'0256ba', 
+'6a0b6a', 
+'feff00', 
+'540404', 
+'024d02', 
+'006161', 
+'000f57', 
+'6e00ac', 
+'e56303', 
+'d4a8a8', 
+'e2e932', 
+'9db868', 
+'7b82ad', 
+'ee0088'  ];
 UJAPP.players = [];
 
 window.onload = function() {
@@ -97,9 +127,9 @@ function update(){
 	
 	if(UJAPP.frameAtual >= UJAPP.framePerUpdate){
 		UJAPP.frameAtual = 0;
-		for(var i=0; i<UJAPP.players.length; i++){
-			UJAPP.players[i].collided = false;
-		}
+		// for(var i=0; i<UJAPP.players.length; i++){
+			// UJAPP.players[i].collided = false;
+		// }
 		for(var i=0; i<UJAPP.players.length; i++){
 			for(var j=i; j<UJAPP.players.length; j++){
 				if( isCollided( UJAPP.players[i], UJAPP.players[j]) ) {
@@ -136,7 +166,7 @@ function isCollided(b1, b2){
 	if(b2.status == UJAPP.DYING && !b2.isPlaying()) b2.destroy();
 	if(b1 == b2) return false;
 	if(b1.status == UJAPP.DEAD || b2.status == UJAPP.DEAD || b1.status == UJAPP.DYING || b2.status == UJAPP.DYING ) return false;
-	if(b1.collided && b2.collided) return false;
+	//if(b1.collided && b2.collided) return false;
 	
 	if(b1.p.distanceSq(b2.p) < (b1.r+b2.r)*(b1.r+b2.r)){
 		b1.collided = true;
@@ -193,4 +223,10 @@ function randomRange(min, max){
 
 function scaleVector(v1, k){
 	return new Crafty.math.Vector2D(v1.x*k, v1.y*k);
+}
+
+function linesToArray(lines){
+	var texto = "";
+	texto = lines.split("\n");
+	return texto;
 }
