@@ -120,12 +120,12 @@ Crafty.scene("names", function() {
 	Crafty.e("2D, DOM, Button, mn_voltar")
 		.attr({x: 304, y: 550})
 		.line(4)
-		.bind('Click', function(){ UJAPP.names = linesToArray(document.getElementsByTagName('TEXTAREA')[0].value); Crafty.scene("jackpot") }); 
+		.bind('Click', function(){ UJAPP.names = linesToArray(document.getElementsByTagName('TEXTAREA')[0].value); UJAPP.display.players = UJAPP.names.length	; Crafty.scene("jackpot") }); 
 	Crafty.e("HTML, Keyboard")
 		.attr({x: 25, y: 310})
 		.replace("<form><textarea style='background-color: 0.1; border:0; width: 400px; height: 200px; font-size:12px; background-color: none'>Miguel\nDavi\nGabriel\nArthur\nLucas\nMatheus\nPedro\nGuilherme\nGustavo\nRafael</textarea></form>")
 	UJAPP.players = [];
-	
+
 });
 
 Crafty.scene("opcoes", function() {
@@ -189,13 +189,29 @@ Crafty.scene("jackpot", function() {
 		h : Crafty.viewport.height
 	}).image(img + ".png", "no-repeat");
 
-	Crafty.e("2D, DOM, Text, cueBallTotal")
-		.attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
-		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
+	// Crafty.e("2D, DOM, Text, cueBallTotal")
+		// .attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
+		// .css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
 	Crafty.e("2D, DOM, Text, dspPlayer")
-		.attr({ x: 40, y: UJAPP.H-60, w: 40, h: 30 })
+		.attr({ x: 62, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
 		.text(UJAPP.display.players);
+	Crafty.e("2D, DOM, Text, dspRemaning")
+		.attr({ x: 160, y: UJAPP.H-60, w: 40, h: 30 })
+		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
+		.text(UJAPP.display.remaning);
+	Crafty.e("2D, DOM, Text, dspNewBall")
+		.attr({ x: 260, y: UJAPP.H-60, w: 40, h: 30 })
+		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
+		.text(UJAPP.display.cueBall);
+	Crafty.e("2D, DOM, Text, dspCueBall")
+		.attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
+		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
+		.text(UJAPP.display.newBall);
+	Crafty.e("2D, DOM, Text, dspPrizes")
+		.attr({ x: 420, y: UJAPP.H-60, w: 40, h: 30 })
+		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
+		.text(UJAPP.display.prizes);
 
 	Crafty.e("2D, DOM, bt_cueball, Button")
 		.attr( { x : 640, y : UJAPP.H-90, w : 34, h : 34} )
