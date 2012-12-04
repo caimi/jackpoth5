@@ -21,7 +21,9 @@ Crafty.scene("loading", function() {
 		mn_credito:   [0,3],
 		mn_credito_on:[1,3],
 		mn_voltar:    [0,4],
-		mn_voltar_on: [1,4]
+		mn_voltar_on: [1,4],
+		mn_proximo:   [0,5],
+		mn_proximo_on: [1,5]
 	});
 	
 	Crafty.sprite(74, 74, "images/start.png", {
@@ -103,7 +105,7 @@ Crafty.scene("splash", function() {
 	Crafty.e("2D, DOM, Button, mn_ajuda")
 		.attr({x: 304, y: 430})
 		.line(2)
-		.bind('Click', function(){ Crafty.scene("names") }); 
+		.bind('Click', function(){ Crafty.scene("ajuda") }); 
 	Crafty.e("2D, DOM, Button, mn_credito")
 		.attr({x: 304, y: 470})
 		.line(3)
@@ -117,10 +119,15 @@ Crafty.scene("names", function() {
 	var bg = Crafty.e("2D, DOM, Image, Mouse")
 		.image("images/splash_800x500.png", "no-repeat")
 	Crafty.background(bg);
-	Crafty.e("2D, DOM, Button, mn_voltar")
+	Crafty.e("2D, DOM, Button, mn_proximo")
 		.attr({x: 304, y: 550})
-		.line(4)
-		.bind('Click', function(){ UJAPP.names = linesToArray(document.getElementsByTagName('TEXTAREA')[0].value); UJAPP.display.players = UJAPP.names.length	; Crafty.scene("jackpot") }); 
+		.line(5)
+		.bind('Click', function(){ 
+			UJAPP.names = linesToArray(document.getElementsByTagName('TEXTAREA')[0].value); 
+			UJAPP.display.players = UJAPP.names.length; 
+			UJAPP.display.remaning = UJAPP.names.length; 
+			Crafty.scene("jackpot") 
+		}); 
 	Crafty.e("HTML, Keyboard")
 		.attr({x: 25, y: 310})
 		.replace("<form><textarea style='background-color: 0.1; border:0; width: 400px; height: 200px; font-size:12px; background-color: none'>Miguel\nDavi\nGabriel\nArthur\nLucas\nMatheus\nPedro\nGuilherme\nGustavo\nRafael</textarea></form>")
@@ -189,9 +196,6 @@ Crafty.scene("jackpot", function() {
 		h : Crafty.viewport.height
 	}).image(img + ".png", "no-repeat");
 
-	// Crafty.e("2D, DOM, Text, cueBallTotal")
-		// .attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
-		// .css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
 	Crafty.e("2D, DOM, Text, dspPlayer")
 		.attr({ x: 62, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
@@ -203,11 +207,11 @@ Crafty.scene("jackpot", function() {
 	Crafty.e("2D, DOM, Text, dspNewBall")
 		.attr({ x: 260, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
-		.text(UJAPP.display.cueBall);
+		.text(UJAPP.display.newBall);
 	Crafty.e("2D, DOM, Text, dspCueBall")
 		.attr({ x: 340, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
-		.text(UJAPP.display.newBall);
+		.text(UJAPP.display.cueBall);
 	Crafty.e("2D, DOM, Text, dspPrizes")
 		.attr({ x: 420, y: UJAPP.H-60, w: 40, h: 30 })
 		.css({"font-family":"impact", "font-size":"24pt", "Color":"#fff", "text-align":"right"})
@@ -221,8 +225,8 @@ Crafty.scene("jackpot", function() {
 				e.p.x = 700;
 				e.p.y = 400;
 				e.type = UJAPP.KILLER;
-				UJAPP.players.push(e);
-				Crafty("cueBallTotal").text(Crafty("cueBall").length);
+				UJAPP.players.push({ball: e});
+				Crafty("dspCueBall").text(Crafty("cueBall").length);
 			}
 		)
 		.line(1)
@@ -250,18 +254,19 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 800, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 		{
-			var e = Crafty.e("Ball, Player, ball" + ((UJAPP.players.length % 30)+1)).attr({ x:700, y:400});
-			UJAPP.players.push(e);
-			e.p.x = 700;
-			e.p.y = 400;
+			UJAPP.display.prizes++;
+			Crafty("dspPrizes").text(UJAPP.display.prizes);
 		})
 		.line(5);
 	Crafty.e("2D, DOM, bt_remove, Button")
 		.attr( { x : 840, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 		{
-			var last = UJAPP.players.pop();
-			last.destroy();
+			UJAPP.display.prizes--;
+			Crafty("dspPrizes").text(UJAPP.display.prizes);
+			// var last = UJAPP.players.pop();
+			// last.destroy();
+			// Crafty("dspCueBall").text(Crafty("cueBall").length);
 		})		
 		.line(6);
 	Crafty.e("2D, DOM, bt_menu, Button")
@@ -271,27 +276,27 @@ Crafty.scene("jackpot", function() {
 		
 	Crafty.e("2D, DOM, bt_start, Button")
 		.attr( { x : 520, y : UJAPP.H-90, w : 74, h : 74} )
-		.bind("Click", function(){ pause()})
-		.setModeOnOff(true);
-		
-	// Crafty.e("2D, DOM, Text")
-			// .attr({x: 30, y:400, w:200, h: 20})
-			// .css({"font-size":"10px"})
-			// .text("Names:" + UJAPP.names);
+		.bind("Click", function(){
+			if(UJAPP.PAUSE && UJAPP.display.remaning <= UJAPP.display.prizes) return; 
+			pause();
+		})
+		.setModeOnOff(true)
+		.setModeOver(false);
 			    Crafty.e("2D,DOM,FPS,Text").attr({maxValues:10, x: 30, y: 50 }).bind("MessureFPS",function(fps){
       this.text("FPS"+fps.value); //Display Current FPS
     })
 	
 	for (var i = 0; i < UJAPP.names.length; i++){
-		UJAPP.players[i] = ( Crafty.e("Ball, Player, ball" + ((i % 31)+1)) );
-		if(75+i*20 < UJAPP.H-100) {
-			Crafty.e("2D, DOM, Text")
-				.attr({x: 25, y:75+(i*20), w:200, h: 20})
-				.css({"font-size":"16px", "text-shadow":"#a1a1a1 1px 1px 1px", "text-shadow":"#000 -1px -1px 1px"})
-				.textColor(UJAPP.colors[i])
-				.text(function(){return UJAPP.names[i]});
+		UJAPP.players[i] = {};
+		UJAPP.players[i].ball = ( Crafty.e("Ball, Player, ball" + ((i % 30)+1)) );
+		UJAPP.players[i].name = UJAPP.names[i];
+		UJAPP.players[i].color = UJAPP.colors[i];
+		if((i*16+75) < (UJAPP.H-120)){
+			Crafty.e("2D, DOM, Text, BoardNames")
+				.attr({x: 25, y:75+(i*16), w:200, h: 20})
+				.css({"font-size":"14px", "text-shadow":"#a1a1a1 1px 1px 1px", "text-shadow":"#000 -1px -1px 1px"})
+				.textColor(UJAPP.colors[i%30])
+				.text(function(){return i + UJAPP.names[i]});
 		}
 	}
-	
-	Crafty("cueBallTotal").text(Crafty("cueBall").length);
 });
