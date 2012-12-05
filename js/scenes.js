@@ -1,6 +1,6 @@
 Crafty.scene("loading", function() {
 
-	Crafty.load(["images/jackpot_1280x800.png", "images/jackpot_1280x1024.png", "images/splash_800x500.png", "images/ball3.png", 
+	Crafty.load(["images/jackpot_1280x800.png", "images/jackpot_1280x800-2.png", "images/jackpot_1280x1024.png", "images/splash_800x500.png", "images/ball3.png", 
 				 "images/explosions2.png", "images/start.png", "images/buttons.png"], function() {
 		setTimeout(function() {
 			Crafty.scene("splash");
@@ -130,7 +130,7 @@ Crafty.scene("names", function() {
 		}); 
 	Crafty.e("HTML, Keyboard")
 		.attr({x: 25, y: 310})
-		.replace("<form><textarea style='background-color: 0.1; border:0; width: 400px; height: 200px; font-size:12px; background-color: none'>Miguel\nDavi\nGabriel\nArthur\nLucas\nMatheus\nPedro\nGuilherme\nGustavo\nRafael</textarea></form>")
+		.replace("<form><textarea style='background-color: 0.1; border:0; width: 400px; height: 200px; font-size:12px; background-color: none'>Adriano\nAntonio\nArbo\nCaimi\nChristiano\nCristina\nDouglas\nFlavio\nGabriel\nGaranhani\nGrazi\nGuilherme\nIgor\nLau\nLeonardo\nLucas Fogaça\nLucas Santos\nMarcia\nMatias\nNodari\nOlavo\n</textarea></form>")
 	UJAPP.players = [];
 
 });
@@ -190,7 +190,7 @@ Crafty.scene("creditos", function() {
 
 Crafty.scene("jackpot", function() {
 	Crafty.viewport.scale(window.innerWidth/1280);
-	var img = "images/jackpot_1280x800";// + Crafty.viewport.width + "x" + Crafty.viewport.height;
+	var img = "images/jackpot_1280x800-2";// + Crafty.viewport.width + "x" + Crafty.viewport.height;
 	var bg = Crafty.e("2D, DOM, Image").attr({
 		w : Crafty.viewport.width,
 		h : Crafty.viewport.height
@@ -221,12 +221,7 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 640, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 			{
-				var e = Crafty.e("Ball, cueBall").attr({ x:700, y:400});
-				e.p.x = 700;
-				e.p.y = 400;
-				e.type = UJAPP.KILLER;
-				UJAPP.players.push({ball: e});
-				Crafty("dspCueBall").text(Crafty("cueBall").length);
+				newCueBall();
 			}
 		)
 		.line(1)
@@ -254,7 +249,8 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 800, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 		{
-			UJAPP.display.prizes++;
+			if(UJAPP.display.prizes < UJAPP.display.remaning)
+				UJAPP.display.prizes++;
 			Crafty("dspPrizes").text(UJAPP.display.prizes);
 		})
 		.line(5);
@@ -262,11 +258,9 @@ Crafty.scene("jackpot", function() {
 		.attr( { x : 840, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
 		{
-			UJAPP.display.prizes--;
+			if(UJAPP.display.prizes > 1)
+				UJAPP.display.prizes--;
 			Crafty("dspPrizes").text(UJAPP.display.prizes);
-			// var last = UJAPP.players.pop();
-			// last.destroy();
-			// Crafty("dspCueBall").text(Crafty("cueBall").length);
 		})		
 		.line(6);
 	Crafty.e("2D, DOM, bt_menu, Button")
@@ -282,8 +276,10 @@ Crafty.scene("jackpot", function() {
 		})
 		.setModeOnOff(true)
 		.setModeOver(false);
-			    Crafty.e("2D,DOM,FPS,Text").attr({maxValues:10, x: 30, y: 50 }).bind("MessureFPS",function(fps){
-      this.text("FPS"+fps.value); //Display Current FPS
+			    Crafty.e("2D,DOM,FPS,Text").attr({maxValues:10, x: 205, y: 45, w:150, h: 20 }).bind("MessureFPS",function(fps){
+      this.text("fps: "+fps.value); //Display Current FPS
+      this.css({"font-size":"14px", "font-weight":"bold", "text-shadow":"#222222 1px 1px 1px"});
+      this.textColor('#a1a1a1');
     })
 	
 	for (var i = 0; i < UJAPP.names.length; i++){
@@ -291,12 +287,11 @@ Crafty.scene("jackpot", function() {
 		UJAPP.players[i].ball = ( Crafty.e("Ball, Player, ball" + ((i % 30)+1)) );
 		UJAPP.players[i].name = UJAPP.names[i];
 		UJAPP.players[i].color = UJAPP.colors[i];
-		if((i*16+75) < (UJAPP.H-120)){
-			Crafty.e("2D, DOM, Text, BoardNames")
-				.attr({x: 25, y:75+(i*16), w:200, h: 20})
-				.css({"font-size":"14px", "text-shadow":"#a1a1a1 1px 1px 1px", "text-shadow":"#000 -1px -1px 1px"})
-				.textColor(UJAPP.colors[i%30])
-				.text(function(){return i + UJAPP.names[i]});
-		}
+		UJAPP.players[i].ball.status = UJAPP.READY;
+		UJAPP.players[i].board = Crafty.e("2D, DOM, Text, BoardNames")
+			.attr({x: 25, y:75+(i*16), w:200, h: 20})
+			.css({"font-size":"14px", "text-shadow":"#a1a1a1 1px 1px 1px", "text-shadow":"#111 1px 1px 1px"})
+			.textColor(UJAPP.colors[i%30])
+			.text(function(){return UJAPP.names[i]});
 	}
 });

@@ -12,6 +12,8 @@ UJAPP.vmin = -5.0;
 UJAPP.vmax = 5.0;
 UJAPP.framePerUpdate = 0;
 UJAPP.frameAtual = 0;
+UJAPP.timeLapsed = 0;
+UJAPP.timeLastFrame = Date.now();
 UJAPP.colors = ['f0c700', 'd70000', '00b600', '00dddd', '007cf3', 
 				'eb00eb', 'f0e395', 'f59595', 'aedb14', 'c5fdfd', 
 				'10bde1', 'ffc4ff', 'efa600', 'b00d0d', '0f9d0f', 
@@ -22,7 +24,8 @@ UJAPP.players = [];
 UJAPP.Player = {
 	ball: null,
 	name: '',
-	color:'' 
+	color:'',
+	board: null
 }
 UJAPP.display = {
 	players: 0,
@@ -36,6 +39,7 @@ window.onload = function() {
 	Crafty.init(UJAPP.W, UJAPP.H);
 	//Crafty.canvas.init(UJAPP.W, UJAPP.H);
 	Crafty.viewport.init();
+	UJAPP.timeLastFrame = Date.now();
 	Crafty.scene("loading");
 };
 
@@ -108,6 +112,17 @@ Crafty.c("Ball",{
 
 function update(){
 	if(UJAPP.PAUSE) return;
+	UJAPP.timeLapsed += Date.now() - UJAPP.timeLastFrame;
+	UJAPP.timeLastFrame = Date.now();  
+	if(UJAPP.timeLapsed >= 1000){
+		UJAPP.display.newBall--;
+		if(UJAPP.display.newBall <= 0){
+			UJAPP.display.newBall = 10;
+			newCueBall();
+		}
+		UJAPP.timeLapsed -= 1000;
+		Crafty("dspNewBall").text(UJAPP.display.newBall);
+	}
 	UJAPP.frameAtual = UJAPP.frameAtual + 1;
 	
 	if(UJAPP.frameAtual >= UJAPP.framePerUpdate){
@@ -196,11 +211,13 @@ function collitionEffect(b1, b2){
 		if(UJAPP.display.remaning <= UJAPP.display.prizes){
 			pause();
 		}
+		Crafty("dspRemaning").text(UJAPP.display.remaning);
 	}
-	Crafty("dspRemaning").text(UJAPP.display.remaning);
 }
 
 function pause(){
+	UJAPP.timeLastFrame = Date.now();
+	printBoardNames();
 	UJAPP.PAUSE = !UJAPP.PAUSE;
 	Crafty("bt_start").setStatus(!UJAPP.PAUSE);
 }
@@ -226,19 +243,30 @@ function linesToArray(lines){
 	texto = lines.split("\n");
 	return texto;
 }
+function newCueBall(){
+	var e = Crafty.e("Ball, cueBall").attr({ x:700, y:400});
+	e.p.x = 700;
+	e.p.y = 400;
+	e.type = UJAPP.KILLER;
+	UJAPP.players.push({ball: e});
+	Crafty("dspCueBall").text(Crafty("cueBall").length);
+}
 
 function printBoardNames(){
-	var ent = Crafty("BoardNames");
-	var j = 0;
-	for(var i = 0; i < ent.length; i++){
-		if((typeof(window[UJAPP.players[j].ball.status])) != undefined){
-			Crafty(ent[i]).textColor(UJAPP.players[j].color);
-			Crafty(ent[i]).text(function(){return UJAPP.players[j].name});
-		}else{
-			Crafty(ent[i]).textColor();
-			Crafty(ent[i]).text(function(){return ''});			
+	var printed = 0;
+	for(var i = 0; i <UJAPP.players.length; i++){
+		if((printed*16+75) < (UJAPP.H-120)){
+			if(UJAPP.players[i].ball.status == UJAPP.READY){
+				UJAPP.players[i].board.textColor(UJAPP.players[i].color);
+				UJAPP.players[i].board.text(function(){return UJAPP.players[i].name});
+				UJAPP.players[i].board.attr({x: 25, y:75+(printed*16), w:200, h: 20})
+				printed++;
+			} else{
+				if(UJAPP.players[i].ball.type != UJAPP.KILLER){
+					UJAPP.players[i].board.text(function(){return ''});
+				}
+			}
 		}
-		j++
 	}
 	/*for (var i = 0; i < UJAPP.players.length; i++){
 		if(UJAPP.players[i].ball.type != UJAPP.KILLER){
