@@ -74,7 +74,7 @@ Crafty.c("Ball",{
 	_state: UJAPP.READY,
 	init: function()
 	{
-		this.addComponent("2D, DOM, SpriteAnimation, ball");
+		this.addComponent("2D, DOM, SpriteAnimation, ball, Text");
 		this.v = new Crafty.math.Vector2D(0,0);//velocity
 		this.p = new Crafty.math.Vector2D(0,0);//position
 		this.r = 13; //raio
@@ -90,7 +90,14 @@ Crafty.c("Ball",{
 		this.attr({x: this.p.x - this.r , y: this.p.y - this.r });
 		this.collidded = false;
 		this.type = UJAPP.PLAYER;
-
+		this.showText = false;
+		this.name = '1';
+		this.text(function(){
+			if(this.showText){
+				return this.name;
+			} else{ return ''
+			}
+		});
 		this.bind('EnterFrame', update)
 		this.bind('KeyDown', function(e)
 		{
@@ -107,7 +114,9 @@ Crafty.c("Ball",{
 		     	this.v.y = randomRange(UJAPP.vmin, UJAPP.vmax);					
 			};
 		});
-	}
+	},
+	showLabel: function() { this.showText = !this.showText; return this; },
+	setName: function(s) { this.name = s; return this; }
 });
 
 function update(){
@@ -250,6 +259,7 @@ function newCueBall(){
 	e.type = UJAPP.KILLER;
 	UJAPP.players.push({ball: e});
 	Crafty("dspCueBall").text(Crafty("cueBall").length);
+	Crafty.audio.play('go');
 }
 
 function printBoardNames(){

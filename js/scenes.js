@@ -244,7 +244,13 @@ Crafty.scene("jackpot", function() {
 		.line(3);
 	Crafty.e("2D, DOM, bt_label, Button")
 		.attr( { x : 760, y : UJAPP.H-90, w : 34, h : 34} )
-		.line(4);
+		.line(4)
+		.bind("Click", function(){
+			var ent = Crafty("Player");
+			for(i=0; i < ent.length; i++){
+				Crafty.e("ball"+(i+1)).showLabel(); 
+			}
+		});
 	Crafty.e("2D, DOM, bt_add, Button")
 		.attr( { x : 800, y : UJAPP.H-90, w : 34, h : 34} )
 		.bind("Click", function()
@@ -285,6 +291,7 @@ Crafty.scene("jackpot", function() {
 	for (var i = 0; i < UJAPP.names.length; i++){
 		UJAPP.players[i] = {};
 		UJAPP.players[i].ball = ( Crafty.e("Ball, Player, ball" + ((i % 30)+1)) );
+		UJAPP.players[i].ball.setName( UJAPP.names[i] );
 		UJAPP.players[i].name = UJAPP.names[i];
 		UJAPP.players[i].color = UJAPP.colors[i];
 		UJAPP.players[i].ball.status = UJAPP.READY;
