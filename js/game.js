@@ -126,7 +126,7 @@ function update(){
 	if(UJAPP.timeLapsed >= 1000){
 		UJAPP.display.newBall--;
 		if(UJAPP.display.newBall <= 0){
-			UJAPP.display.newBall = 10;
+			UJAPP.display.newBall = 5;
 			newCueBall();
 		}
 		UJAPP.timeLapsed -= 1000;
@@ -205,24 +205,23 @@ function collitionEffect(b1, b2){
 	b2.v.add(scaleVector(normal, (f1-f2)));
 	
 	if( (b1.type == UJAPP.KILLER || b2.type == UJAPP.KILLER) ){
-		if(!(b1.type == UJAPP.KILLER) && b1.status != UJAPP.DEAD ){
-			b1.status = UJAPP.DYING;	
-			Crafty.audio.play('ploc');
-			b1.animate('explode', 15, 0);
-			UJAPP.display.remaning--;
-		}
-		if(!(b2.type == UJAPP.KILLER) && b2.status != UJAPP.DEAD){
-			b2.status = UJAPP.DYING;
-			Crafty.audio.play('ploc');
-			b2.animate('explode', 15, 0);
-			UJAPP.display.remaning--;
-		}
+		removePlayer(b1);
+		removePlayer(b2);
 		if(UJAPP.display.remaning <= UJAPP.display.prizes){
 			pause();
 		}
-		Crafty("dspRemaning").text(UJAPP.display.remaning);
 	}
 }
+
+function removePlayer(player){
+	if(!(player.type == UJAPP.KILLER) && player.status != UJAPP.DEAD ){
+			player.status = UJAPP.DYING;	
+			Crafty.audio.play('ploc');
+			player.animate('explode', 15, 0);
+			UJAPP.display.remaning--;
+	}
+	Crafty("dspRemaning").text(UJAPP.display.remaning);
+} 
 
 function pause(){
 	UJAPP.timeLastFrame = Date.now();
@@ -278,15 +277,4 @@ function printBoardNames(){
 			}
 		}
 	}
-	/*for (var i = 0; i < UJAPP.players.length; i++){
-		if(UJAPP.players[i].ball.type != UJAPP.KILLER){
-			if((i*16+75) < (UJAPP.H-120)){
-				Crafty.e("2D, DOM, Text, BoardNames")
-					.attr({x: 25, y:75+(i*16), w:200, h: 20})
-					.css({"font-size":"14px", "text-shadow":"#a1a1a1 1px 1px 1px", "text-shadow":"#000 -1px -1px 1px"})
-					.textColor(UJAPP.players[i].color)
-					.text(function(){return UJAPP.players[i].name});
-			}
-		}
-	}*/
 }

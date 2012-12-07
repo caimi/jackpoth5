@@ -112,6 +112,13 @@ Crafty.scene("splash", function() {
 		.bind('Click', function(){ Crafty.scene("creditos") }); 
 		
 	UJAPP.players = [];
+	UJAPP.display = {
+		players: 0,
+		remaning:0,
+		newBall: 5,
+		cueBall: 0,
+		prizes: 1
+	};
 });
 
 Crafty.scene("names", function() {
