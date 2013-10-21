@@ -1,0 +1,61 @@
+<html>
+<body>
+	
+	<canvas id="game-canvas" width="1024" height="720" style="border:1px solid #d3d3d3;">
+	Your browser does not support the HTML5 canvas tag.</canvas>
+
+	<script>
+	
+		var ballWidth = 23;
+		var ballHeight = 26;
+		var speed = 5;
+	
+		var image = new Image();
+		image.src = "images/single-ball.png";
+		var canvas= document.getElementById("game-canvas");
+		var context= canvas.getContext("2d");
+		
+		
+		var m_canvas = document.createElement('canvas');
+		m_canvas.width = ballWidth;
+		m_canvas.height = ballHeight;
+		var m_context = m_canvas.getContext('2d');
+		m_context.drawImage(image, 0, 0);
+		
+		var elements = new Array();
+		for(var i = 0; i < 300; i++){
+			elements.push(
+				{
+					x: Math.random()*canvas.width,
+					y: Math.random()*canvas.height,
+					xSpeed:speed,
+					ySpeed:speed
+				}
+			);
+		}
+		
+		function loop(){			
+			for(var i in elements){
+				context.clearRect(elements[i].x, elements[i].y, m_canvas.width, m_canvas.height);
+			}
+			for(var i in elements){
+				elements[i].x+=elements[i].xSpeed;
+				elements[i].y+=elements[i].ySpeed;
+				
+				if(elements[i].x > canvas.width)
+					elements[i].xSpeed = -speed;
+				if(elements[i].x < 0)
+					elements[i].xSpeed = speed;
+				if(elements[i].y > canvas.height)
+					elements[i].ySpeed = -speed;
+				if(elements[i].y < 0)
+					elements[i].ySpeed = speed;
+					
+				context.drawImage(m_canvas, elements[i].x, elements[i].y);
+			}
+			requestAnimationFrame(loop);			
+		}
+		loop();
+	</script>
+</body>
+</html>
