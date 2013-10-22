@@ -8,8 +8,28 @@
 	
 		var ballWidth = 23;
 		var ballHeight = 26;
-		var speed = 5;
-	
+		var speed = 1;
+		var radius = 9;
+		var diameter = 2 * radius;
+		var diameterPowerOfTwo = diameter * diameter;
+		var centerX = 12;
+		var centerY = 12;		
+
+		function collide(point1, point2){
+
+		    var xs = 0;
+		    var ys = 0;
+		     
+		    xs = point2.x - point1.x;
+		    xs = xs * xs;
+		     
+		    ys = point2.y - point1.y;
+		    ys = ys * ys;
+		    
+ 
+		    return  xs + ys  < diameterPowerOfTwo;
+		}
+
 		var image = new Image();
 		image.src = "images/single-ball.png";
 		var canvas= document.getElementById("game-canvas");
@@ -33,11 +53,13 @@
 				}
 			);
 		}
-		
+	
+		var toBeRemoved = new Array();	
 		function loop(){			
 			for(var i in elements){
 				context.clearRect(elements[i].x, elements[i].y, m_canvas.width, m_canvas.height);
 			}
+
 			for(var i in elements){
 				elements[i].x+=elements[i].xSpeed;
 				elements[i].y+=elements[i].ySpeed;
@@ -50,11 +72,36 @@
 					elements[i].ySpeed = -speed;
 				if(elements[i].y < 0)
 					elements[i].ySpeed = speed;
-					
+			
+				
+			}
+
+			for(var i in elements){
+				for(var j in elements){
+					if(!toBeRemoved) toBeRemoved = new Array();
+					if(elements[i] != elements[j] &&  collide(elements[i],elements[j])){
+						toBeRemoved.push(elements[i]);
+						toBeRemoved.push(elements[j]);
+					}
+				}
+			}
+
+			if(toBeRemoved){
+				for(var i in toBeRemoved){
+					var index = elements.indexOf(toBeRemoved[i]);
+					if (index > -1) {
+						elements.splice(index, 1);
+					}
+				}
+			}
+			toBeRemoved = null;
+
+			for(var i in elements){
 				context.drawImage(m_canvas, elements[i].x, elements[i].y);
 			}
 			requestAnimationFrame(loop);			
 		}
+
 		loop();
 	</script>
 </body>
