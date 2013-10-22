@@ -8,25 +8,20 @@
 	
 		var ballWidth = 23;
 		var ballHeight = 26;
-		var speed = 1;
 		var radius = 9;
 		var diameter = 2 * radius;
 		var diameterPowerOfTwo = diameter * diameter;
-		var centerX = 12;
-		var centerY = 12;		
+
+		var speed = 1;
 
 		function collide(point1, point2){
-
-		    var xs = 0;
-		    var ys = 0;
 		     
-		    xs = point2.x - point1.x;
+		    var xs = point2.x - point1.x;
 		    xs = xs * xs;
 		     
-		    ys = point2.y - point1.y;
+		    var ys = point2.y - point1.y;
 		    ys = ys * ys;
-		    
- 
+
 		    return  xs + ys  < diameterPowerOfTwo;
 		}
 
@@ -79,7 +74,7 @@
 			for(var i in elements){
 				for(var j in elements){
 					if(!toBeRemoved) toBeRemoved = new Array();
-					if(elements[i] != elements[j] &&  collide(elements[i],elements[j])){
+					if(elements[i] != elements[j] && collide(elements[i],elements[j])){
 						toBeRemoved.push(elements[i]);
 						toBeRemoved.push(elements[j]);
 					}
