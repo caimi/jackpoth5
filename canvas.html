@@ -11,10 +11,9 @@
 		var radius = 9;
 		var diameter = 2 * radius;
 		var diameterPowerOfTwo = diameter * diameter;
-
 		var speed = 1;
 
-		function collide(point1, point2){
+		function areColliding(point1, point2){
 		     
 		    var xs = point2.x - point1.x;
 		    xs = xs * xs;
@@ -23,6 +22,34 @@
 		    ys = ys * ys;
 
 		    return  xs + ys  < diameterPowerOfTwo;
+		}
+
+		function onCollision(a, b){
+			var normal = {x:a.x-b.x,y:a.y-b.y}; 
+			
+			var length = Math.sqrt(normal.x * normal.x + normal.y * normal.y);
+			if (length === 0) {
+		        normal.x = 1;
+		        normal.y = 0;
+		    } else {
+		        normal.x /= length;
+		        normal.y /= length;
+		    }
+			
+			//2 corpos nao ocupam o mesmo lugar no espaco.
+			a.x += (diameter * normal.x);
+			a.y += (diameter * normal.y);
+		
+			//conservacao de energia
+			var aF = a.xSpeed * normal.x + a.ySpeed * normal.y;
+			var bF = b.xSpeed * normal.x + b.ySpeed * normal.y;
+			
+			var fDelta = aF - bF;
+			a.xSpeed -=  fDelta * normal.x;
+			a.ySpeed -=  fDelta * normal.y;
+			
+			b.xSpeed +=  fDelta * normal.x;
+			b.ySpeed +=  fDelta * normal.y;
 		}
 
 		var image = new Image();
@@ -38,7 +65,7 @@
 		m_context.drawImage(image, 0, 0);
 		
 		var elements = new Array();
-		for(var i = 0; i < 300; i++){
+		for(var i = 0; i < 100; i++){
 			elements.push(
 				{
 					x: Math.random()*canvas.width,
@@ -48,11 +75,10 @@
 				}
 			);
 		}
-	
-		var toBeRemoved = new Array();	
+		
 		function loop(){			
 			for(var i in elements){
-				context.clearRect(elements[i].x, elements[i].y, m_canvas.width, m_canvas.height);
+				context.clearRect(elements[i].x-1, elements[i].y-1, m_canvas.width+2, m_canvas.height+2);
 			}
 
 			for(var i in elements){
@@ -73,23 +99,11 @@
 
 			for(var i in elements){
 				for(var j in elements){
-					if(!toBeRemoved) toBeRemoved = new Array();
-					if(elements[i] != elements[j] && collide(elements[i],elements[j])){
-						toBeRemoved.push(elements[i]);
-						toBeRemoved.push(elements[j]);
+					if(elements[i] != elements[j] && areColliding(elements[i],elements[j])){
+						onCollision(elements[i],elements[j]);
 					}
 				}
 			}
-
-			if(toBeRemoved){
-				for(var i in toBeRemoved){
-					var index = elements.indexOf(toBeRemoved[i]);
-					if (index > -1) {
-						elements.splice(index, 1);
-					}
-				}
-			}
-			toBeRemoved = null;
 
 			for(var i in elements){
 				context.drawImage(m_canvas, elements[i].x, elements[i].y);
