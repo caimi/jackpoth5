@@ -1,12 +1,13 @@
-Math.seedrandom("hello.");
-var ballCount = 30;
+var seed = "hello.";
+var ballCount = 300;
 
 var ballWidth = 23;
 var ballHeight = 26;
 var radius = 9;
 var diameter = 2 * radius;
 var diameterPowerOfTwo = diameter * diameter;
-var speed = 1;
+var speed = 2;
+var elements;
 
 function areColliding(point1, point2){
     var xs = point2.x - point1.x;
@@ -55,31 +56,33 @@ m_canvas.width = ballWidth;
 m_canvas.height = ballHeight;
 var m_context = m_canvas.getContext('2d');
 	
-
-var elements = new Array();
-for(var i = 0; i < ballCount; i++){
-	var newBall = {
-                                x: Math.random()*canvas.width,
-                                y: Math.random()*canvas.height,
-                                xSpeed:Math.random()*speed,
-                                ySpeed:Math.random()*speed
-                        };
-	while(isCollidingWithAny(newBall)){
-		newBall = {
-                                x: Math.random()*canvas.width,
-                                y: Math.random()*canvas.height,
-                                xSpeed:Math.random()*speed,
-                                ySpeed:Math.random()*speed
-                        };
+function restart(){
+	Math.seedrandom(seed);
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	elements = new Array();
+	for(var i = 0; i < ballCount; i++){
+		var newBall = {
+									x: Math.random()*canvas.width,
+									y: Math.random()*canvas.height,
+									xSpeed:Math.random()*speed,
+									ySpeed:Math.random()*speed
+							};
+		while(isCollidingWithAny(newBall)){
+			newBall = {
+									x: Math.random()*canvas.width,
+									y: Math.random()*canvas.height,
+									xSpeed:Math.random()*speed,
+									ySpeed:Math.random()*speed
+							};
+		}
+		elements.push(newBall);
 	}
-	elements.push(newBall);
 }
 
+
 function loop(){
-	for(var i in elements){
+	for(var i=0;i<elements.length;i++){
 		context.clearRect(elements[i].x-1, elements[i].y-1, m_canvas.width+2, m_canvas.height+2);
-	}
-	for(var i in elements){
 		elements[i].x+=elements[i].xSpeed;
 		elements[i].y+=elements[i].ySpeed;
 		
@@ -99,8 +102,6 @@ function loop(){
 				break;
 			}
 		}
-	}
-	for(var i in elements){
 		context.drawImage(m_canvas, elements[i].x, elements[i].y);
 	}
 	requestAnimationFrame(loop);			
@@ -109,6 +110,7 @@ function loop(){
 var image = new Image();
 image.onload = function(){
 	m_context.drawImage(image, 0, 0);
+	restart();
 	requestAnimationFrame(loop);
 };
 
