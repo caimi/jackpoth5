@@ -1,5 +1,4 @@
-var seed = "hello.";
-var ballCount = 300;
+var ballImageUrl = "images/canvas/ball.png";
 
 var ballWidth = 23;
 var ballHeight = 26;
@@ -57,6 +56,8 @@ m_canvas.height = ballHeight;
 var m_context = m_canvas.getContext('2d');
 	
 function restart(){
+	var seed = document.getElementById("seed").value;
+	var ballCount = document.getElementById("ballCount").value;
 	Math.seedrandom(seed);
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
@@ -114,4 +115,4 @@ image.onload = function(){
 	requestAnimationFrame(loop);
 };
 
-image.src = "images/single-ball.png";	
+image.src = ballImageUrl;	
