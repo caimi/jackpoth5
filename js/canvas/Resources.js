@@ -7,22 +7,27 @@ function Resources(){
 		var resourceCount = imageResourcesURLs.length;
 		 
 		for(var i in imageResourcesURLs){
-			var image = new Image();
-			image.onload = function(){
-				var m_canvas = document.createElement('canvas');
-				m_canvas.width = ballWidth;
-				m_canvas.height = ballHeight;
-				var m_context = m_canvas.getContext('2d');
-				m_context.drawImage(image, 0, 0);
-				loadedResources[imageResourcesURLs[i].name] = m_canvas;
+			(function(){
+				var image = new Image();
+				var imageUrl = imageResourcesURLs[i].url;
+				var imageName = imageResourcesURLs[i].name;
 				
-				resourcesLoaded++;
-				var newPercetage = (resourcesLoaded/resourceCount)*100;
-				percentageListener.updateLoadedPercentage(newPercetage);
-				if(resourcesLoaded == resourceCount)
-					percentageListener.loadingComplete();
-			};
-			image.src = imageResourcesURLs[i].url;
+				image.onload = function(){
+					var m_canvas = document.createElement('canvas');
+					m_canvas.width = ballWidth;
+					m_canvas.height = ballHeight;
+					var m_context = m_canvas.getContext('2d');
+					m_context.drawImage(image, 0, 0);
+					loadedResources[imageName] = m_canvas;
+					
+					resourcesLoaded++;
+					var newPercetage = (resourcesLoaded/resourceCount)*100;
+					percentageListener.updateLoadedPercentage(newPercetage);
+					if(resourcesLoaded == resourceCount)
+						percentageListener.loadingComplete();
+				};
+				image.src = imageUrl;
+			})();
 		}
 	};
 	

@@ -3,7 +3,7 @@ var ballHeight = 26;
 var radius = 9;
 var diameter = 2 * radius;
 var diameterPowerOfTwo = diameter * diameter;
-var speed = 2;
+var speed = 4;
 var elements;
 var oneSecond = 1000;
 var FPS = 30;
@@ -12,11 +12,13 @@ var frameLimit = oneSecond/FPS;
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
 
-var resources = new Resources();
+var availableColors = ["purple", "blue"];
 
+var resources = new Resources();
 resources.load(
 	[
-		{url:"images/canvas/ball.png",name:"purple"}
+		{url:"images/canvas/ball.png",name:"purple"},
+		{url:"images/canvas/ball2.png",name:"blue"}
 	],
 	{
 		updateLoadedPercentage: function(percetLoaded){
@@ -82,17 +84,18 @@ function Ball(x, y, xSpeed, ySpeed, color){
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
+	this.canvas = resources.get(color);
 	this.paint = function(){
-		context.drawImage(resources.get("purple"), this.x, this.y);
+		context.drawImage(this.canvas, this.x, this.y);
 	}
 }
 	
-function randomBall(){
+function randomBall(){ 
 	return new Ball(Math.random()*canvas.width,
 					Math.random()*canvas.height,
 					Math.random()*speed,
 					Math.random()*speed,
-					0
+					availableColors[Math.floor(Math.random()*10)%availableColors.length]
 				);
 }
 	
