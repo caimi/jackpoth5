@@ -1,5 +1,3 @@
-var ballImageUrl = "images/canvas/ball.png";
-
 var ballWidth = 23;
 var ballHeight = 26;
 var radius = 9;
@@ -10,6 +8,27 @@ var elements;
 var oneSecond = 1000;
 var FPS = 30;
 var frameLimit = oneSecond/FPS;
+
+var canvas= document.getElementById("game-canvas");
+var context= canvas.getContext("2d");
+
+var resources = new Resources();
+
+resources.load(
+	[
+		{url:"images/canvas/ball.png",name:"purple"}
+	],
+	{
+		updateLoadedPercentage: function(percetLoaded){
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillText("Carregando "+percetLoaded+"%", 10, 10);
+		},
+		loadingComplete: function(){
+			restart();
+			requestAnimationFrame(loop);
+		} 
+	}
+);
 
 function areColliding(point1, point2){
     var xs = point2.x - point1.x;
@@ -58,14 +77,24 @@ function printFps(fps){
     span.appendChild( document.createTextNode(fps) );
 }
 
-var canvas= document.getElementById("game-canvas");
-var context= canvas.getContext("2d");
-
-
-var m_canvas = document.createElement('canvas');
-m_canvas.width = ballWidth;
-m_canvas.height = ballHeight;
-var m_context = m_canvas.getContext('2d');
+function Ball(x, y, xSpeed, ySpeed, color){
+	this.x = x;
+	this.y = y;
+	this.xSpeed = xSpeed;
+	this.ySpeed = ySpeed;
+	this.paint = function(){
+		context.drawImage(resources.get("purple"), this.x, this.y);
+	}
+}
+	
+function randomBall(){
+	return new Ball(Math.random()*canvas.width,
+					Math.random()*canvas.height,
+					Math.random()*speed,
+					Math.random()*speed,
+					0
+				);
+}
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
@@ -74,19 +103,9 @@ function restart(){
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
 	for(var i = 0; i < ballCount; i++){
-		var newBall = {
-									x: Math.random()*canvas.width,
-									y: Math.random()*canvas.height,
-									xSpeed:Math.random()*speed,
-									ySpeed:Math.random()*speed
-							};
+		var newBall = randomBall();
 		while(isCollidingWithAny(newBall)){
-			newBall = {
-									x: Math.random()*canvas.width,
-									y: Math.random()*canvas.height,
-									xSpeed:Math.random()*speed,
-									ySpeed:Math.random()*speed
-							};
+			newBall = randomBall();
 		}
 		elements.push(newBall);
 	}
@@ -94,6 +113,8 @@ function restart(){
 
 var lastLoopTime = Date.now();
 var delta = 0;
+var ballWidthWithExtra = ballWidth+2;
+var ballHeightWithExtra = ballHeight+2;
 function loop(){
 	var currentTime = Date.now();
 	delta += currentTime - lastLoopTime;
@@ -103,7 +124,7 @@ function loop(){
 		return;	
 	}
 	for(var i=0;i<elements.length;i++){
-		context.clearRect(elements[i].x-1, elements[i].y-1, m_canvas.width+2, m_canvas.height+2);
+		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
 		elements[i].x+=elements[i].xSpeed;
 		elements[i].y+=elements[i].ySpeed;
 		
@@ -123,19 +144,10 @@ function loop(){
 				break;
 			}
 		}
-		context.drawImage(m_canvas, elements[i].x, elements[i].y);
+		elements[i].paint();
 	}
 	printFps(delta);
 	lastLoopTime = Date.now();
 	delta = 0;
 	requestAnimationFrame(loop);			
 }
-
-var image = new Image();
-image.onload = function(){
-	m_context.drawImage(image, 0, 0);
-	restart();
-	requestAnimationFrame(loop);
-};
-
-image.src = ballImageUrl;	
