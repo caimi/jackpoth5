@@ -7,6 +7,9 @@ var diameter = 2 * radius;
 var diameterPowerOfTwo = diameter * diameter;
 var speed = 2;
 var elements;
+var oneSecond = 1000;
+var FPS = 30;
+var frameLimit = oneSecond/FPS;
 
 function areColliding(point1, point2){
     var xs = point2.x - point1.x;
@@ -80,8 +83,16 @@ function restart(){
 	}
 }
 
-
+var lastLoopTime = Date.now();
+var delta = 0;
 function loop(){
+	var currentTime = Date.now();
+	delta += currentTime - lastLoopTime;
+	if(delta < frameLimit){
+		lastLoopTime = Date.now();
+		requestAnimationFrame(loop);
+		return;	
+	}
 	for(var i=0;i<elements.length;i++){
 		context.clearRect(elements[i].x-1, elements[i].y-1, m_canvas.width+2, m_canvas.height+2);
 		elements[i].x+=elements[i].xSpeed;
@@ -105,6 +116,7 @@ function loop(){
 		}
 		context.drawImage(m_canvas, elements[i].x, elements[i].y);
 	}
+	lastLoopTime = Date.now();
 	requestAnimationFrame(loop);			
 }
 
