@@ -93,8 +93,8 @@ function Ball(x, y, xSpeed, ySpeed, color){
 function randomBall(){ 
 	return new Ball(Math.random()*canvas.width,
 					Math.random()*canvas.height,
-					Math.random()*speed,
-					Math.random()*speed,
+					(Math.random()*speed*2)-speed,
+					(Math.random()*speed*2)-speed,
 					availableColors[Math.floor(Math.random()*10)%availableColors.length]
 				);
 }
