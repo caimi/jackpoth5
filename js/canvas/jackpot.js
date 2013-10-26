@@ -49,6 +49,15 @@ function isCollidingWithAny(a){
 	return false;
 }
 
+function printFps(fps){
+	var span = document.getElementById("fps");
+    
+    while( span.firstChild ) {
+        span.removeChild( span.firstChild );
+    }
+    span.appendChild( document.createTextNode(fps) );
+}
+
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
 
@@ -116,7 +125,9 @@ function loop(){
 		}
 		context.drawImage(m_canvas, elements[i].x, elements[i].y);
 	}
+	printFps(delta);
 	lastLoopTime = Date.now();
+	delta = 0;
 	requestAnimationFrame(loop);			
 }
 
