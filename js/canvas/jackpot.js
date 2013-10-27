@@ -14,6 +14,8 @@ var FPS = 30;
 var frameLimit = oneSecond/FPS;
 var running = true;
 var timePassed = 0;
+var lastLoopTime = Date.now();
+var delta = 0;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -34,7 +36,6 @@ resources.load(
 		},
 		loadingComplete: function(){
 			restart();
-			requestAnimationFrame(loop);
 		} 
 	}
 );
@@ -128,7 +129,8 @@ function killerBall(){
 function restart(){
 	var seed = document.getElementById("seed").value;
 	var ballCount = document.getElementById("ballCount").value;
-	timePassed = 0
+	timePassed = 0;
+	running = true;
 	Math.seedrandom(seed);
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
@@ -140,10 +142,11 @@ function restart(){
 		elements.push(newBall);
 	}
 	killerBall();
+	delta = 0;
+	lastLoopTime = Date.now();
+	requestAnimationFrame(loop);
 }
 
-var lastLoopTime = Date.now();
-var delta = 0;
 var ballWidthWithExtra = ballWidth+2;
 var ballHeightWithExtra = ballHeight+2;
 function loop(){
