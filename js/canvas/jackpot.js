@@ -1,6 +1,7 @@
 document.getElementById("seed").value = Date.now();
 var timeElement = document.getElementById("time");
 var runnersElement = document.getElementById("runners");
+var losersElement = document.getElementById("losers");
 
 var ballWidth = 23;
 var ballHeight = 26;
@@ -56,12 +57,27 @@ function normalize(x,y){
 	return {x:(x / length), y:(y / length)};
 }
 
+function onDeath(ball){
+	var names = runnersElement.value.split("\n");
+	var liveNames = "";
+	for(var i in names){
+		if(ball.name==names[i]){
+			losersElement.value += names[i] + "\n";
+		}else{
+			liveNames += names[i] + "\n";
+		}
+	}
+	runnersElement.value = liveNames.trim();
+}
+
 function onCollision(a, b){
 	if(a.killer && !b.killer){
+		onDeath(b);
 		b.dead = true;
 	}
 	if(!a.killer && b.killer){
 		a.dead = true;
+		onDeath(a);
 	}
 	
 	var normal = normalize(a.x-b.x,a.y-b.y);
@@ -128,8 +144,9 @@ function killerBall(){
 }
 	
 function restart(){
+	losersElement.value = "";
 	var seed = document.getElementById("seed").value;
-	var names = runnersElement.value.split('\n');
+	var names = runnersElement.value.split('\n').sort();
 	timePassed = 0;
 	running = true;
 	Math.seedrandom(seed);
