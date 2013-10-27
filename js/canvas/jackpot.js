@@ -91,23 +91,27 @@ function printTime(time){
 	timeElement.appendChild( document.createTextNode(time) );	
 }
 
-function Ball(x, y, xSpeed, ySpeed, color){
+function Ball(x, y, xSpeed, ySpeed, color, name){
 	this.x = x;
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
+	this.name = name;
 	this.canvas = resources.get(color);
 	this.paint = function(){
 		context.drawImage(this.canvas, this.x, this.y);
+		if(name)
+			context.fillText(this.name, this.x, this.y + radius);
 	}
 }
 	
-function randomBall(){ 
+function randomBall(name){ 
 	return new Ball(Math.random()*canvas.width,
 					Math.random()*canvas.height,
 					(Math.random()*speed*2)-speed,
 					(Math.random()*speed*2)-speed,
-					availableColors[Math.floor(Math.random()*10)%availableColors.length]
+					availableColors[Math.floor(Math.random()*10)%availableColors.length],
+					name
 				);
 }
 	
@@ -124,16 +128,16 @@ function killerBall(){
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
-	var ballCount = document.getElementById("runners").value.match(/\n/g).length + 1;
+	var names = document.getElementById("runners").value.split('\n');
 	timePassed = 0;
 	running = true;
 	Math.seedrandom(seed);
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
-	for(var i = 0; i < ballCount; i++){
-		var newBall = randomBall();
+	for(var i = 0; i < names.length; i++){
+		var newBall = randomBall(names[i]);
 		while(isCollidingWithAny(newBall)){
-			newBall = randomBall();
+			newBall = randomBall(names[i]);
 		}
 		elements.push(newBall);
 	}
