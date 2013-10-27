@@ -1,6 +1,5 @@
 document.getElementById("seed").value = Date.now();
 var timeElement = document.getElementById("time");
-var fpsElement = document.getElementById("fps");
 
 var ballWidth = 23;
 var ballHeight = 26;
@@ -92,11 +91,6 @@ function printTime(time){
 	timeElement.appendChild( document.createTextNode(time) );	
 }
 
-function printFps(fps){
-	fpsElement.removeChild( fpsElement.firstChild );
-    fpsElement.appendChild( document.createTextNode(fps) );
-}
-
 function Ball(x, y, xSpeed, ySpeed, color){
 	this.x = x;
 	this.y = y;
@@ -130,7 +124,7 @@ function killerBall(){
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
-	var ballCount = document.getElementById("ballCount").value;
+	var ballCount = document.getElementById("runners").value.match(/\n/g).length + 1;
 	timePassed = 0;
 	running = true;
 	Math.seedrandom(seed);
@@ -204,7 +198,6 @@ function loop(){
 	}
 	if(liveCount == 1)
 		running = false;
-	printFps(delta);
 	lastLoopTime = Date.now();
 	delta = 0;
 	requestAnimationFrame(loop);			
