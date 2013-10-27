@@ -1,5 +1,9 @@
 var ballsByColor = {};
 
+function clearBalls(){
+    ballsByColor = {};
+}
+
 function getBall(key){
     if(!key)
         return resources.get("white");
@@ -14,7 +18,7 @@ function getBall(key){
     
     var originalPixels = m_context.getImageData(0, 0, m_canvas.width, m_canvas.height);
     var currentPixels = m_context.getImageData(0, 0, m_canvas.width, m_canvas.height);
-    
+
     var newColor = {R:Math.random()*255,G:Math.random()*255,B:Math.random()*255};
 
     for(var I = 0, L = originalPixels.data.length; I < L; I += 4)

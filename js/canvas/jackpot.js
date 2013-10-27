@@ -3,9 +3,9 @@ var timeElement = document.getElementById("time");
 var runnersElement = document.getElementById("runners");
 var losersElement = document.getElementById("losers");
 
-var ballWidth = 23;
+var ballWidth = 26;
 var ballHeight = 26;
-var radius = 9;
+var radius = ballWidth/2;
 var diameter = 2 * radius;
 var diameterPowerOfTwo = diameter * diameter;
 var speed = 4;
@@ -17,7 +17,7 @@ var running = true;
 var timePassed = 0;
 var lastLoopTime = Date.now();
 var delta = 0;
-var ballGenerationInterval = 5;
+var ballGenerationInterval = 1;
 var lastGeneratedBallTime = 0;
 
 var canvas= document.getElementById("game-canvas");
@@ -116,7 +116,7 @@ function Ball(x, y, xSpeed, ySpeed, name){
 	this.paint = function(){
 		context.drawImage(this.canvas, this.x, this.y);
 		if(name)
-			context.fillText(this.name, this.x, this.y + radius);
+			context.fillText(this.name, this.x, this.y);
 	}
 }
 	
@@ -141,6 +141,7 @@ function killerBall(){
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
+	Math.seedrandom(seed);
 	runnersElement.value = (runnersElement.value + "\n" + losersElement.value).trim();
 	var names = runnersElement.value.split('\n').sort().filter(
 		function (value, index, self) { 
@@ -151,9 +152,9 @@ function restart(){
 	
 	timePassed = 0;
 	running = true;
-	Math.seedrandom(seed);
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
+	clearBalls();
 	for(var i = 0; i < names.length; i++){
 		var newBall = randomBall(names[i]);
 		while(isCollidingWithAny(newBall)){
@@ -168,8 +169,6 @@ function restart(){
 	requestAnimationFrame(loop);
 }
 
-var ballWidthWithExtra = ballWidth+2;
-var ballHeightWithExtra = ballHeight+2;
 function loop(){
 	if(!running) return;
 	var currentTime = Date.now();
@@ -187,9 +186,8 @@ function loop(){
 	}
 	
 	printTime(Math.floor(timePassed/1000));
-	for(var i=0;i<elements.length;i++){
- 		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
-		elements[i].x+=elements[i].xSpeed;
+	context.clearRect(0, 0,canvas.width, canvas.height);
+	for(var i=0;i<elements.length;i++){elements[i].x+=elements[i].xSpeed;
 		elements[i].y+=elements[i].ySpeed;
 		
 		if(elements[i].x + diameter > canvas.width)
