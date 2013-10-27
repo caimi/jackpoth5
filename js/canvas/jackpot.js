@@ -22,6 +22,8 @@ var lastGeneratedBallTime = 0;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
+context.textAlign="center";
+context.font = "italic 40pt Calibri";
 
 var resources = new Resources();
 resources.load(
@@ -35,7 +37,8 @@ resources.load(
 		},
 		loadingComplete: function(){
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillText("Fill the list and press play", 10, 10);
+			context.fillText("Fill the list and press play", canvas.width/2, canvas.height/2);
+			context.font = "20px Times New Roman";
 			//Set play button visible
 		} 
 	}
