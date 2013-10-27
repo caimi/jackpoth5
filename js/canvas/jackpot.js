@@ -142,7 +142,11 @@ function killerBall(){
 function restart(){
 	var seed = document.getElementById("seed").value;
 	runnersElement.value = (runnersElement.value + "\n" + losersElement.value).trim();
-	var names = runnersElement.value.split('\n').sort();
+	var names = runnersElement.value.split('\n').sort().filter(
+		function (value, index, self) { 
+    		return self.indexOf(value) === index;
+		}
+	);
 	losersElement.value = "";
 	
 	timePassed = 0;
