@@ -3,14 +3,14 @@
 </head>
 <body>
 	
-	<canvas id="game-canvas" width="1024" height="720" style="border:1px solid #d3d3d3;">
+	<canvas id="game-canvas" width="300" height="300" style="border:1px solid #d3d3d3;">
 		Your browser does not support the HTML5 canvas tag.
 	</canvas>
 	<br>
 	FPS: <span id="fps">0</span>
 	Time: <span id="time">0</span>
 	Seed: <input type="text" id="seed" value="12345" onload="javascript:this.value=Date.now()">
-	Balls: <input type="text" id="ballCount" value="300">
+	Balls: <input type="text" id="ballCount" value="10">
 	<a><img src="images/canvas/play.png" onclick="javascript:restart()"></a>
 	<a><img src="images/canvas/newKillerBall.png" onclick="javascript:killerBall()"></a>
 

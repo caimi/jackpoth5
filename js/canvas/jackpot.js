@@ -16,6 +16,8 @@ var running = true;
 var timePassed = 0;
 var lastLoopTime = Date.now();
 var delta = 0;
+var ballGenerationInterval = 5;
+var lastGeneratedBallTime = 0;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -143,6 +145,7 @@ function restart(){
 	}
 	killerBall();
 	delta = 0;
+	lastGeneratedBallTime = 0;
 	lastLoopTime = Date.now();
 	requestAnimationFrame(loop);
 }
@@ -159,6 +162,12 @@ function loop(){
 		return;	
 	}
 	timePassed+=frameLimit;
+	var timePassedInSeconds = Math.floor(timePassed/1000);
+	if(timePassedInSeconds-lastGeneratedBallTime >= ballGenerationInterval){
+		lastGeneratedBallTime = timePassedInSeconds;
+		killerBall();
+	}
+	
 	printTime(Math.floor(timePassed/1000));
 	for(var i=0;i<elements.length;i++){
  		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
