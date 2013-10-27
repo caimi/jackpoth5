@@ -39,6 +39,9 @@ resources.load(
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillText("Fill the list and press play", canvas.width/2, canvas.height/2);
 			context.font = "20px Times New Roman";
+			context.strokeStyle = 'black';
+    		context.lineWidth = 3;
+    		context.fillStyle = 'white';
 			//Set play button visible
 		} 
 	}
@@ -118,8 +121,10 @@ function Ball(x, y, xSpeed, ySpeed, name){
 	this.canvas = getBall(name);
 	this.paint = function(){
 		context.drawImage(this.canvas, this.x, this.y);
-		if(name)
+		if(name){
+			context.strokeText(this.name, this.x, this.y);
 			context.fillText(this.name, this.x, this.y);
+		}
 	}
 }
 	
