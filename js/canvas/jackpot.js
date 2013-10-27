@@ -1,3 +1,5 @@
+document.getElementById("seed").value = Date.now();
+
 var ballWidth = 23;
 var ballHeight = 26;
 var radius = 9;
@@ -8,6 +10,7 @@ var elements;
 var oneSecond = 1000;
 var FPS = 30;
 var frameLimit = oneSecond/FPS;
+var running = true;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -107,6 +110,17 @@ function randomBall(){
 				);
 }
 	
+function killerBall(){
+	var firstKiller = new Ball(canvas.width/2,
+					canvas.height/2,
+					(Math.random()*speed*2)-speed,
+					(Math.random()*speed*2)-speed,
+					"white"
+				);
+	firstKiller.killer = true;
+	elements.push(firstKiller);
+}
+	
 function restart(){
 	var seed = document.getElementById("seed").value;
 	var ballCount = document.getElementById("ballCount").value;
@@ -120,14 +134,7 @@ function restart(){
 		}
 		elements.push(newBall);
 	}
-	var firstKiller = new Ball(canvas.width/2,
-					canvas.height/2,
-					(Math.random()*speed*10*2)-speed,
-					(Math.random()*speed*10*2)-speed,
-					"white"
-				);
-	firstKiller.killer = true;
-	elements.push(firstKiller);
+	killerBall();
 }
 
 var lastLoopTime = Date.now();
@@ -135,6 +142,7 @@ var delta = 0;
 var ballWidthWithExtra = ballWidth+2;
 var ballHeightWithExtra = ballHeight+2;
 function loop(){
+	if(!running) return;
 	var currentTime = Date.now();
 	delta += currentTime - lastLoopTime;
 	if(delta < frameLimit){
@@ -165,12 +173,18 @@ function loop(){
 		}
 		
 	}
+	var liveCount = 0;
 	for(var i=elements.length-1;i>=0;i--){
-		if(elements[i].dead)
+		if(elements[i].dead){
 			elements.splice(elements.indexOf(elements[i]), 1);
-		else
+		}else{
+			if(!elements[i].killer)
+				liveCount++;
 			elements[i].paint();
+		}
 	}
+	if(liveCount == 1)
+		running = false;
 	printFps(delta);
 	lastLoopTime = Date.now();
 	delta = 0;

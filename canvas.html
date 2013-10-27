@@ -8,9 +8,10 @@
 	</canvas>
 	<br>
 	FPS: <span id="fps">0</span>
-	Seed: <input type="text" id="seed" value="1234xx">
+	Seed: <input type="text" id="seed" value="12345" onload="javascript:this.value=Date.now()">
 	Balls: <input type="text" id="ballCount" value="300">
 	<a><img src="images/canvas/play.png" onclick="javascript:restart()"></a>
+	<a><img src="images/canvas/newKillerBall.png" onclick="javascript:killerBall()"></a>
 
 	<script type="text/javascript" src="js/canvas/Resources.js"></script>
 	<script type="text/javascript" src="js/canvas/seedrandom.js"></script>
