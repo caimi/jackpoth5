@@ -17,8 +17,9 @@ var availableColors = ["purple", "blue"];
 var resources = new Resources();
 resources.load(
 	[
-		{url:"images/canvas/ball.png",name:"purple"},
-		{url:"images/canvas/ball2.png",name:"blue"}
+		{url:"images/canvas/purple.png",name:"purple"},
+		{url:"images/canvas/blue.png",name:"blue"},
+		{url:"images/canvas/white.png",name:"white"}
 	],
 	{
 		updateLoadedPercentage: function(percetLoaded){
@@ -47,6 +48,13 @@ function normalize(x,y){
 }
 
 function onCollision(a, b){
+	if(a.killer && !b.killer){
+		b.dead = true;
+	}
+	if(!a.killer && b.killer){
+		a.dead = true;
+	}
+	
 	var normal = normalize(a.x-b.x,a.y-b.y);
 
  	b.x = a.x - (normal.x * diameter);
@@ -112,6 +120,14 @@ function restart(){
 		}
 		elements.push(newBall);
 	}
+	var firstKiller = new Ball(canvas.width/2,
+					canvas.height/2,
+					(Math.random()*speed*10*2)-speed,
+					(Math.random()*speed*10*2)-speed,
+					"white"
+				);
+	firstKiller.killer = true;
+	elements.push(firstKiller);
 }
 
 var lastLoopTime = Date.now();
@@ -127,7 +143,7 @@ function loop(){
 		return;	
 	}
 	for(var i=0;i<elements.length;i++){
-		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
+ 		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
 		elements[i].x+=elements[i].xSpeed;
 		elements[i].y+=elements[i].ySpeed;
 		
@@ -147,7 +163,13 @@ function loop(){
 				break;
 			}
 		}
-		elements[i].paint();
+		
+	}
+	for(var i=elements.length-1;i>=0;i--){
+		if(elements[i].dead)
+			elements.splice(elements.indexOf(elements[i]), 1);
+		else
+			elements[i].paint();
 	}
 	printFps(delta);
 	lastLoopTime = Date.now();
