@@ -1,5 +1,6 @@
 document.getElementById("seed").value = Date.now();
 var timeElement = document.getElementById("time");
+var runnersElement = document.getElementById("runners");
 
 var ballWidth = 23;
 var ballHeight = 26;
@@ -128,7 +129,7 @@ function killerBall(){
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
-	var names = document.getElementById("runners").value.split('\n');
+	var names = runnersElement.value.split('\n');
 	timePassed = 0;
 	running = true;
 	Math.seedrandom(seed);
