@@ -23,13 +23,9 @@ var lastGeneratedBallTime = 0;
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
 
-var availableColors = ["purple", "blue"];
-
 var resources = new Resources();
 resources.load(
 	[
-		{url:"images/canvas/purple.png",name:"purple"},
-		{url:"images/canvas/blue.png",name:"blue"},
 		{url:"images/canvas/white.png",name:"white"}
 	],
 	{
@@ -110,13 +106,13 @@ function printTime(time){
 	timeElement.appendChild( document.createTextNode(time) );	
 }
 
-function Ball(x, y, xSpeed, ySpeed, color, name){
+function Ball(x, y, xSpeed, ySpeed, name){
 	this.x = x;
 	this.y = y;
 	this.xSpeed = xSpeed;
 	this.ySpeed = ySpeed;
 	this.name = name;
-	this.canvas = resources.get(color);
+	this.canvas = getBall(name);
 	this.paint = function(){
 		context.drawImage(this.canvas, this.x, this.y);
 		if(name)
@@ -129,7 +125,6 @@ function randomBall(name){
 					Math.random()*canvas.height,
 					(Math.random()*speed*2)-speed,
 					(Math.random()*speed*2)-speed,
-					availableColors[Math.floor(Math.random()*10)%availableColors.length],
 					name
 				);
 }
@@ -138,8 +133,7 @@ function killerBall(){
 	var firstKiller = new Ball(canvas.width/2,
 					canvas.height/2,
 					(Math.random()*speed*2)-speed,
-					(Math.random()*speed*2)-speed,
-					"white"
+					(Math.random()*speed*2)-speed
 				);
 	firstKiller.killer = true;
 	elements.push(firstKiller);
