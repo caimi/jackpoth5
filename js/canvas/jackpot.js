@@ -1,4 +1,6 @@
 document.getElementById("seed").value = Date.now();
+var timeElement = document.getElementById("time");
+var fpsElement = document.getElementById("fps");
 
 var ballWidth = 23;
 var ballHeight = 26;
@@ -11,6 +13,7 @@ var oneSecond = 1000;
 var FPS = 30;
 var frameLimit = oneSecond/FPS;
 var running = true;
+var timePassed = 0;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -81,13 +84,14 @@ function isCollidingWithAny(a){
 	return false;
 }
 
+function printTime(time){
+	timeElement.removeChild( timeElement.firstChild );
+	timeElement.appendChild( document.createTextNode(time) );	
+}
+
 function printFps(fps){
-	var span = document.getElementById("fps");
-    
-    while( span.firstChild ) {
-        span.removeChild( span.firstChild );
-    }
-    span.appendChild( document.createTextNode(fps) );
+	fpsElement.removeChild( fpsElement.firstChild );
+    fpsElement.appendChild( document.createTextNode(fps) );
 }
 
 function Ball(x, y, xSpeed, ySpeed, color){
@@ -124,6 +128,7 @@ function killerBall(){
 function restart(){
 	var seed = document.getElementById("seed").value;
 	var ballCount = document.getElementById("ballCount").value;
+	timePassed = 0
 	Math.seedrandom(seed);
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	elements = new Array();
@@ -150,6 +155,8 @@ function loop(){
 		requestAnimationFrame(loop);
 		return;	
 	}
+	timePassed+=frameLimit;
+	printTime(Math.floor(timePassed/1000));
 	for(var i=0;i<elements.length;i++){
  		context.clearRect(elements[i].x, elements[i].y, ballWidthWithExtra, ballHeightWithExtra);
 		elements[i].x+=elements[i].xSpeed;
