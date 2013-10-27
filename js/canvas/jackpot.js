@@ -122,8 +122,8 @@ function Ball(x, y, xSpeed, ySpeed, name){
 	this.paint = function(){
 		context.drawImage(this.canvas, this.x, this.y);
 		if(name){
-			context.strokeText(this.name, this.x, this.y);
-			context.fillText(this.name, this.x, this.y);
+			context.strokeText(this.name, this.x+radius, this.y);
+			context.fillText(this.name, this.x+radius, this.y);
 		}
 	}
 }
