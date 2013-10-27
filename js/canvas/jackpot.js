@@ -35,10 +35,12 @@ resources.load(
 	{
 		updateLoadedPercentage: function(percetLoaded){
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillText("Carregando "+percetLoaded+"%", 10, 10);
+			context.fillText("Loading "+percetLoaded+"%", 10, 10);
 		},
 		loadingComplete: function(){
-			restart();
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillText("Fill the list and press play", 10, 10);
+			//Set play button visible
 		} 
 	}
 );
@@ -144,9 +146,11 @@ function killerBall(){
 }
 	
 function restart(){
-	losersElement.value = "";
 	var seed = document.getElementById("seed").value;
+	runnersElement.value = (runnersElement.value + "\n" + losersElement.value).trim();
 	var names = runnersElement.value.split('\n').sort();
+	losersElement.value = "";
+	
 	timePassed = 0;
 	running = true;
 	Math.seedrandom(seed);
