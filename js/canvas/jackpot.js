@@ -1,6 +1,8 @@
 var timeElement = document.getElementById("time");
 var runnersElement = document.getElementById("runners");
 var losersElement = document.getElementById("losers");
+var seedElement = document.getElementById("seed");
+var lastSeedElement = document.getElementById("lastSeed");
 
 var ballWidth = 26;
 var ballHeight = 26;
@@ -146,10 +148,17 @@ function killerBall(){
 	elements.push(firstKiller);
 }
 	
-function restart(){
-	var seed = document.getElementById("seed").value;
+function getSeed(){
+	var seed = seedElement.value;
 	if(seed == "")
-		seed = Date.now();
+		seed = Date.now()+"";
+	lastSeedElement.removeChild( lastSeedElement.firstChild );
+	lastSeedElement.appendChild( document.createTextNode(seed) );
+	return seed;
+}
+	
+function restart(){
+	var seed = getSeed();
 	Math.seedrandom(seed);
 	runnersElement.value = (runnersElement.value + "\n" + losersElement.value).trim();
 	var names = runnersElement.value.split('\n').sort().filter(
