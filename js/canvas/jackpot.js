@@ -38,10 +38,10 @@ resources.load(
 		loadingComplete: function(){
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillText("Fill the list and press play", canvas.width/2, canvas.height/2);
-			context.font = "20px Times New Roman";
-			context.strokeStyle = 'black';
+			context.font = "bold 20px Arial";
+			context.strokeStyle = "black";
     		context.lineWidth = 3;
-    		context.fillStyle = 'white';
+    		context.fillStyle = "white";
 			//Set play button visible
 		} 
 	}
