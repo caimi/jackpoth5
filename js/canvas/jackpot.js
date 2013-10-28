@@ -1,4 +1,3 @@
-document.getElementById("seed").value = Date.now();
 var timeElement = document.getElementById("time");
 var runnersElement = document.getElementById("runners");
 var losersElement = document.getElementById("losers");
@@ -149,6 +148,8 @@ function killerBall(){
 	
 function restart(){
 	var seed = document.getElementById("seed").value;
+	if(seed == "")
+		seed = Date.now();
 	Math.seedrandom(seed);
 	runnersElement.value = (runnersElement.value + "\n" + losersElement.value).trim();
 	var names = runnersElement.value.split('\n').sort().filter(
