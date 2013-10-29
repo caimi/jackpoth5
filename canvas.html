@@ -22,9 +22,11 @@ canvas{
 
 	<br>
 	<input type="checkbox" id="isSeeded" onclick="isSeededChanged()" >Game with seed<br>
-	Seed:   <input type="text" id="seed" disabled="disabled"><br>
-	Width:  <input type="text" id="seededWidth" disabled="disabled"> <br>
-	Height: <input type="text" id="seededHeight" disabled="disabled"> <br>
+	<div id="seedOptions" style="display:none;" >
+		Seed:   <input type="text" id="seed"><br>
+		Width:  <input type="text" id="seededWidth"> <br>
+		Height: <input type="text" id="seededHeight"> <br>
+	</div>
 	Participants:<br><textarea id="runners" rows="50" cols="50">Adriano
 Antonio
 Arbo

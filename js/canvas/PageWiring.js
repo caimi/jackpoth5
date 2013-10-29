@@ -1,11 +1,7 @@
 function isSeededChanged(){
     if(document.getElementById("isSeeded").checked){
-        document.getElementById("seed").disabled = false;
-        document.getElementById("seededWidth").disabled = false;
-        document.getElementById("seededHeight").disabled = false;
+        document.getElementById("seedOptions").style.display="block";
     }else{
-        document.getElementById("seed").disabled = true;
-        document.getElementById("seededWidth").disabled = true;
-        document.getElementById("seededHeight").disabled = true;
+        document.getElementById("seedOptions").style.display="none";
     }
 }
