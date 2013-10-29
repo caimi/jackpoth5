@@ -60,13 +60,14 @@ var escape = 27;
 document.onkeydown = function(e) {
 	if(running){
     	if(e.keyCode === enter){
-			killerBall();	
+			killerBall();
+			e.preventDefault();
 		}
-		if(e.keyCode === escape){
-			stop();
-		}
-        e.preventDefault();
     }
+	if(e.keyCode === escape){
+		stop();
+		e.preventDefault();
+	}
 };
 
 function areColliding(point1, point2){
