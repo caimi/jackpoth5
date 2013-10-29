@@ -21,12 +21,11 @@ canvas{
 <div id="config">
 
 	<br>
-	<input type="checkbox" id="isSeeded">Game with seed<br>
+	<input type="checkbox" id="isSeeded" onclick="isSeededChanged()" >Game with seed<br>
 	Seed:   <input type="text" id="seed" disabled="disabled"><br>
 	Width:  <input type="text" id="seededWidth" disabled="disabled"> <br>
 	Height: <input type="text" id="seededHeight" disabled="disabled"> <br>
-	<a><img src="images/canvas/play.png" onclick="javascript:restart()"></a>
-	Participants:<textarea id="runners" rows="10" cols="50">Adriano
+	Participants:<br><textarea id="runners" rows="50" cols="50">Adriano
 Antonio
 Arbo
 Caimi
@@ -96,12 +95,13 @@ Ludivina Boddie
 Veronique Hawkinson
 Ayanna Keala
 Breana Fortney
-Josphine Mattson</textarea>
-
+Josphine Mattson</textarea><br>
+	<a><img src="images/canvas/play.png" onclick="restart()"></a>
 </div>
 	<script type="text/javascript" src="js/canvas/Resources.js"></script>
 	<script type="text/javascript" src="js/canvas/BallFactory.js"></script>
 	<script type="text/javascript" src="js/canvas/seedrandom.js"></script>
+	<script type="text/javascript" src="js/canvas/PageWiring.js"></script>
 	<script type="text/javascript" src="js/canvas/jackpot.js"></script>
 </body>
 </html>

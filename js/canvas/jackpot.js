@@ -1,6 +1,9 @@
 var runnersElement = document.getElementById("runners");
 var seedElement = document.getElementById("seed");
 var configElement = document.getElementById("config");
+var seededWidthElement = document.getElementById("seededWidth");
+var seededHeightElement = document.getElementById("seededHeight");
+var isSeededElement = document.getElementById("isSeeded");
 
 var ballWidth = 26;
 var ballHeight = 26;
@@ -35,8 +38,6 @@ resources.load(
 			context.fillText("Loading "+percetLoaded+"%", 10, 10);
 		},
 		loadingComplete: function(){
-			setupCanvas();
-			context.fillText("Fill the list and press play", canvas.width/2, canvas.height/2);
 
 			//Set play button visible
 		} 
@@ -44,8 +45,14 @@ resources.load(
 );
 
 function setupCanvas(){
-	context.canvas.width  = window.innerWidth;
-	context.canvas.height = window.innerHeight;
+	if(isSeededElement.checked){
+		context.canvas.width  = seededWidthElement.value;
+		context.canvas.height = seededHeightElement.value;
+	}else{
+		context.canvas.width  = window.innerWidth;
+		context.canvas.height = window.innerHeight;	
+	}
+	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	context.font = "bold 20px Arial";
 	context.strokeStyle = "black";
@@ -155,10 +162,9 @@ function killerBall(){
 }
 	
 function getSeed(){
-	var seed = seedElement.value;
-	if(seed == "")
-		seed = Date.now()+"";
-	return seed;
+	if(!isSeededElement.checked)
+		return Date.now()+"";
+	return seedElement.value;
 }
 
 function stop(){
