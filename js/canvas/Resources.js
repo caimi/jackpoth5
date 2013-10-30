@@ -14,8 +14,8 @@ function Resources(){
 				
 				image.onload = function(){
 					var m_canvas = document.createElement('canvas');
-					m_canvas.width = ballWidth;
-					m_canvas.height = ballHeight;
+					m_canvas.width = this.width;
+					m_canvas.height = this.height;
 					var m_context = m_canvas.getContext('2d');
 					m_context.drawImage(image, 0, 0);
 					loadedResources[imageName] = m_canvas;

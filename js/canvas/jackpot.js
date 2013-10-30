@@ -10,11 +10,11 @@ var ballHeight = 26;
 var radius = ballWidth/2;
 var diameter = 2 * radius;
 var diameterPowerOfTwo = diameter * diameter;
-var speed = 4;
+var speed = 10;
 var elements;
 var oneSecond = 1000;
 var FPS = 30;
-var frameLimit = oneSecond/FPS;
+var frameLimit = Math.floor(oneSecond/FPS);
 var running = true;
 var timePassed = 0;
 var lastLoopTime = Date.now();
@@ -30,7 +30,8 @@ context.font = "italic 40pt Calibri";
 var resources = new Resources();
 resources.load(
 	[
-		{url:"images/canvas/white.png",name:"white"}
+		{url:"images/canvas/white.png",name:"white"},
+		{url:"images/canvas/explosion.png",name:"explosion"}
 	],
 	{
 		updateLoadedPercentage: function(percetLoaded){
@@ -78,6 +79,8 @@ document.onkeydown = function(e) {
 };
 
 function areColliding(point1, point2){
+	if(point1.dying || point2.dying)
+		return false;
     var xs = point2.x - point1.x;
     xs *= xs;
     var ys = point2.y - point1.y;
@@ -93,10 +96,10 @@ function normalize(x,y){
 
 function onCollision(a, b){
 	if(a.killer && !b.killer){
-		b.dead = true;
+		b.die();
 	}
 	if(!a.killer && b.killer){
-		a.dead = true;
+		a.die();
 	}
 	
 	var normal = normalize(a.x-b.x,a.y-b.y);
@@ -126,6 +129,23 @@ function printTime(time){
 	context.fillText(time,10,10);	
 }
 
+function Animation(onAnimationEnd){
+	this.frameAnim = 0;
+	this.frameCount = 16;
+	this.anim = resources.get("explosion");
+	this.onAnimationEnd = onAnimationEnd;
+}
+
+Animation.prototype.paint = function(x,y){
+	var timePassedAsSeconds = Math.floor(timePassed/1000);
+	var sourceX = ballWidth*(timePassed%this.frameCount);
+	context.drawImage(this.anim, sourceX, 0, ballWidth, ballHeight, x, y, ballWidth, ballHeight);
+	this.frameAnim++;
+	if(this.frameAnim==this.frameCount-1){
+		this.onAnimationEnd();
+	}
+}
+
 function Ball(x, y, xSpeed, ySpeed, name){
 	this.x = x;
 	this.y = y;
@@ -133,15 +153,26 @@ function Ball(x, y, xSpeed, ySpeed, name){
 	this.ySpeed = ySpeed;
 	this.name = name;
 	this.canvas = getBall(name);
-	this.paint = function(){
+	var self = this;
+	this.explosion = new Animation(function(){self.dead = true;});
+}
+
+Ball.prototype.paint = function(){
+	if(this.dying){
+		this.explosion.paint(this.x, this.y);
+	}else{
 		context.drawImage(this.canvas, this.x, this.y);
-		if(name){
-			context.strokeText(this.name, this.x+radius, this.y);
-			context.fillText(this.name, this.x+radius, this.y);
-		}
+	}
+	if(this.name){
+		context.strokeText(this.name, this.x+radius, this.y);
+		context.fillText(this.name, this.x+radius, this.y);
 	}
 }
-	
+
+Ball.prototype.die = function(){
+	this.dying = true;
+}
+
 function randomBall(name){ 
 	return new Ball(Math.random()*canvas.width,
 					Math.random()*canvas.height,
