@@ -163,7 +163,7 @@ Ball.prototype.paint = function(){
 	}else{
 		context.drawImage(this.canvas, this.x, this.y);
 	}
-	if(this.name){
+	if(this.name && !this.dying){
 		context.strokeText(this.name, this.x+radius, this.y);
 		context.fillText(this.name, this.x+radius, this.y);
 	}
@@ -280,7 +280,7 @@ function loop(){
 		if(elements[i].dead){
 			elements.splice(elements.indexOf(elements[i]), 1);
 		}else{
-			if(!elements[i].killer)
+			if(!elements[i].killer && !elements[i].dying)
 				liveCount++;
 			elements[i].paint();
 		}
