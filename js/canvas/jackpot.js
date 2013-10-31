@@ -132,16 +132,18 @@ function printTime(time){
 function Animation(onAnimationEnd){
 	this.frameAnim = 0;
 	this.frameCount = 16;
-	this.anim = resources.get("explosion");
+	this.timePassed = 0;
+	this.animationStrip = resources.get("explosion");
+	this.animationDuration = 500; //millisseconds
 	this.onAnimationEnd = onAnimationEnd;
 }
 
-Animation.prototype.paint = function(x,y){
-	var timePassedAsSeconds = Math.floor(timePassed/1000);
-	var sourceX = ballWidth*(timePassed%this.frameCount);
-	context.drawImage(this.anim, sourceX, 0, ballWidth, ballHeight, x, y, ballWidth, ballHeight);
-	this.frameAnim++;
-	if(this.frameAnim==this.frameCount-1){
+Animation.prototype.paint = function(delta, x, y){
+	this.timePassed += delta;
+	var currentFrame = Math.floor(this.frameCount*(this.timePassed/this.animationDuration));
+	var sourceX = ballWidth*currentFrame;
+	context.drawImage(this.animationStrip, sourceX, 0, ballWidth, ballHeight, x, y, ballWidth, ballHeight);
+	if(this.timePassed > this.animationDuration){
 		this.onAnimationEnd();
 	}
 }
@@ -157,9 +159,9 @@ function Ball(x, y, xSpeed, ySpeed, name){
 	this.explosion = new Animation(function(){self.dead = true;});
 }
 
-Ball.prototype.paint = function(){
+Ball.prototype.paint = function(delta){
 	if(this.dying){
-		this.explosion.paint(this.x, this.y);
+		this.explosion.paint(delta, this.x, this.y);
 	}else{
 		context.drawImage(this.canvas, this.x, this.y);
 	}
@@ -282,7 +284,7 @@ function loop(){
 		}else{
 			if(!elements[i].killer && !elements[i].dying)
 				liveCount++;
-			elements[i].paint();
+			elements[i].paint(delta);
 		}
 	}
 	if(liveCount == 1)
