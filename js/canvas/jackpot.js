@@ -15,12 +15,13 @@ var elements;
 var oneSecond = 1000;
 var FPS = 30;
 var frameLimit = Math.floor(oneSecond/FPS);
-var running = true;
+var running = false;
 var timePassed = 0;
 var lastLoopTime = Date.now();
 var delta = 0;
 var ballGenerationInterval = 1;
 var lastGeneratedBallTime = 0;
+var winnersCount = 1;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -31,14 +32,17 @@ var resources = new Resources();
 resources.load(
 	[
 		{url:"images/canvas/white.png",name:"white",type:"image"},
-		{url:"images/canvas/explosion.png",name:"explosion",type:"image"}
+		{url:"images/canvas/explosion.png",name:"explosion",type:"image"},
+		{url:"sounds/go.wav",name:"go",type:"audio"}
 	],
 	{
 		updateLoadedPercentage: function(percetLoaded){
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			context.fillText("Loading "+percetLoaded+"%", 10, 10);
+			console.log(percetLoaded);
 		},
 		loadingComplete: function(){
+			console.log("Done");
 			//Set play button visible
 		} 
 	}
@@ -224,6 +228,7 @@ Ball.prototype.paint = function(delta){
 }
 
 Ball.prototype.die = function(){
+	resources.get("go").play();
 	this.dying = true;
 }
 
@@ -339,7 +344,7 @@ function loop(){
 			elements[i].paint(delta);
 		}
 	}
-	if(liveCount == 1)
+	if(liveCount == winnersCount)
 		running = false;
 	lastLoopTime = Date.now();
 	delta = 0;

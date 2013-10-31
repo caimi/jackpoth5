@@ -2,10 +2,19 @@ function Resources(){
 	
 	var loadedResources = new Object();
 		
-	this.load = function(imageResourcesURLs, percentageListener){
+	this.load = function(resources, percentageListener){
 		var resourcesLoaded = 0;
-		var resourceCount = imageResourcesURLs.length;
+		var resourceCount = resources.length;
 		 
+		var imageResourcesURLs = new Array();
+		var audioResourcesURLs = new Array();
+		for(var i in resources){
+			if(resources[i].type == "image")
+				imageResourcesURLs.push(resources[i]);
+			if(resources[i].type == "audio")
+				audioResourcesURLs.push(resources[i]);
+		}
+		
 		for(var i in imageResourcesURLs){
 			(function(){
 				var image = new Image();
@@ -29,11 +38,33 @@ function Resources(){
 				image.src = imageUrl;
 			})();
 		}
+		
+		for(var i in audioResourcesURLs){
+			(function(){
+				var audio = new Audio(audioResourcesURLs[i].url);
+				audio.addEventListener("loadeddata", function(){
+					if(loadedResources[audioName]) return;
+					loadedResources[audioName] = audio;
+					loadedResources[audioName].type = "audio";
+					
+					resourcesLoaded++;
+					var newPercetage = (resourcesLoaded/resourceCount)*100;
+					percentageListener.updateLoadedPercentage(newPercetage);
+					if(resourcesLoaded == resourceCount)
+						percentageListener.loadingComplete();
+				}, false);
+				var audioUrl = audioResourcesURLs[i].url;
+				var audioName = audioResourcesURLs[i].name;
+			})();
+		}
+			
 	};
 	
 	this.get = function(resourceName){
 		if(loadedResources[resourceName] == null)
 			throw "No such resource "+resourceName;
+		if(loadedResources[resourceName].type == "audio")
+			loadedResources[resourceName].load();
 		return loadedResources[resourceName];
 	};
 }
