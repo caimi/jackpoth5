@@ -1,14 +1,7 @@
-var runnersElement = document.getElementById("runners");
-var seedElement = document.getElementById("seed");
-var configElement = document.getElementById("config");
-var seededWidthElement = document.getElementById("seededWidth");
-var seededHeightElement = document.getElementById("seededHeight");
-var isSeededElement = document.getElementById("isSeeded");
-
 var ballWidth = 26;
 var ballHeight = 26;
 var radius = ballWidth/2;
-var diameter = 2 * radius;
+var diameter = 2 * radius; 
 var diameterPowerOfTwo = diameter * diameter;
 var speed = 10;
 var elements;
@@ -252,9 +245,7 @@ function killerBall(){
 }
 	
 function getSeed(){
-	if(!isSeededElement.checked)
-		return Date.now()+"";
-	return seedElement.value;
+	return gameOptions.seed;
 }
 
 function stop(){
@@ -270,11 +261,7 @@ function restart(){
 	
 	var seed = getSeed();
 	Math.seedrandom(seed);
-	var names = runnersElement.value.split('\n').sort().filter(
-		function (value, index, self) { 
-    		return self.indexOf(value) === index;
-		}
-	);
+	var names = gameOptions.players;
 	
 	timePassed = 0;
 	running = true;
