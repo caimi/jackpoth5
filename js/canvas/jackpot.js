@@ -21,7 +21,7 @@ var lastLoopTime = Date.now();
 var delta = 0;
 var ballGenerationInterval = 1;
 var lastGeneratedBallTime = 0;
-var winnersCount = 1;
+var prizeCount = 1;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -344,7 +344,7 @@ function loop(){
 			elements[i].paint(delta);
 		}
 	}
-	if(liveCount == winnersCount)
+	if(liveCount == prizeCount)
 		running = false;
 	lastLoopTime = Date.now();
 	delta = 0;

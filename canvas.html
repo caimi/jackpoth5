@@ -19,8 +19,19 @@ canvas{
 		Your browser does not support the HTML5 canvas tag.
 	</canvas>
 <div id="config">
-
+	Before pressing play use f11 to go fullscreen
 	<br>
+	Commands:
+	<br>
+	Enter: add ball
+	<br>
+	Space: pause
+	<br>
+	Esc: exit
+	<br>
+	White ball generation interval: <input type="text" id="generationInterval"><br>
+	Balls speed: <input type="text" id="ballsSpeed"><br>
+	Prizes: <input type="text" id="prizes"><br>
 	<input type="checkbox" id="isSeeded" onclick="isSeededChanged()" >Game with seed<br>
 	<div id="seedOptions" style="display:none;" >
 		Seed:   <input type="text" id="seed"><br>
