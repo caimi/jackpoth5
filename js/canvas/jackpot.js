@@ -30,8 +30,8 @@ context.font = "italic 40pt Calibri";
 var resources = new Resources();
 resources.load(
 	[
-		{url:"images/canvas/white.png",name:"white"},
-		{url:"images/canvas/explosion.png",name:"explosion"}
+		{url:"images/canvas/white.png",name:"white",type:"image"},
+		{url:"images/canvas/explosion.png",name:"explosion",type:"image"}
 	],
 	{
 		updateLoadedPercentage: function(percetLoaded){
@@ -39,11 +39,31 @@ resources.load(
 			context.fillText("Loading "+percetLoaded+"%", 10, 10);
 		},
 		loadingComplete: function(){
-
 			//Set play button visible
 		} 
 	}
 );
+
+function fillStrokedText(text, x, y){
+	context.strokeText(text, x, y);
+	context.fillText(text, x, y);
+}
+
+function setCanvaContextDefaultValues(){
+	context.font = "bold 20px Arial";
+	context.strokeStyle = "black";
+	context.lineWidth = 3;
+	context.fillStyle = "white";
+	context.textAlign="center";	
+}
+
+function setCanvaContextPausedScreenValues(){
+	context.font = "bold 40px Arial";
+	context.strokeStyle = "black";
+	context.lineWidth = 3;
+	context.fillStyle = "white";
+	context.textAlign="center";	
+}
 
 function setupCanvas(){
 	if(isSeededElement.checked){
@@ -53,20 +73,16 @@ function setupCanvas(){
 		context.canvas.width  = window.innerWidth;
 		context.canvas.height = window.innerHeight;	
 	}
-	
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	context.font = "bold 20px Arial";
-	context.strokeStyle = "black";
-	context.lineWidth = 3;
-	context.fillStyle = "white";
-	context.textAlign="center";
+	setCanvaContextDefaultValues();
 }
 
 
 var enter = 13;
 var escape = 27;
+var space = 32;
 document.onkeydown = function(e) {
-	if(running){
+	if(running){ 
     	if(e.keyCode === enter){
 			killerBall();
 			e.preventDefault();
@@ -74,6 +90,43 @@ document.onkeydown = function(e) {
     }
 	if(e.keyCode === escape){
 		stop();
+		e.preventDefault();
+	}
+	if(e.keyCode === space){
+		if(running){
+			running = false;
+			
+		    var currentPixels = context.getImageData(0, 0, canvas.width, canvas.height);
+			var d = currentPixels.data;
+			for (var i=0; i<d.length; i+=4) {
+				var r = d[i];
+				var g = d[i+1];
+				var b = d[i+2];
+				// CIE luminance for the RGB
+				// The human eye is bad at seeing red and blue, so we de-emphasize them.
+				var v = 0.2126*r + 0.7152*g + 0.0722*b;
+				d[i] = d[i+1] = d[i+2] = v;
+				
+				if(d[i+3] === 0){
+					d[i] = d[i+1] = d[i+2] = 0;
+					d[i+3] -= 0 ;	
+				}
+			}
+			context.putImageData(currentPixels, 0, 0);
+			context.fillStyle = "rgba(255, 255, 255, 0.8)";
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			setCanvaContextPausedScreenValues();
+			
+			var lineHeight = 40;
+			fillStrokedText("Paused", canvas.width/2, canvas.height/2);
+			fillStrokedText("Add ball: <Enter>", canvas.width/2, canvas.height/2 + lineHeight);
+			fillStrokedText("Exit: <Esc>", canvas.width/2, canvas.height/2 + lineHeight*2);
+			
+			setCanvaContextDefaultValues();
+		}else{
+			running = true;
+			loop();
+		}
 		e.preventDefault();
 	}
 };
@@ -166,8 +219,7 @@ Ball.prototype.paint = function(delta){
 		context.drawImage(this.canvas, this.x, this.y);
 	}
 	if(this.name && !this.dying){
-		context.strokeText(this.name, this.x+radius, this.y);
-		context.fillText(this.name, this.x+radius, this.y);
+		fillStrokedText(this.name, this.x+radius, this.y);
 	}
 }
 
