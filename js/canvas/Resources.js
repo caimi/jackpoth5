@@ -42,7 +42,7 @@ function Resources(){
 		for(var i in audioResourcesURLs){
 			(function(){
 				var audio = new Audio(audioResourcesURLs[i].url);
-				audio.addEventListener("loadeddata", function(){
+				audio.addEventListener("canplaythrough", function(){ 
 					if(loadedResources[audioName]) return;
 					loadedResources[audioName] = audio;
 					loadedResources[audioName].type = "audio";
