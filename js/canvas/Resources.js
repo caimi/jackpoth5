@@ -41,7 +41,7 @@ function Resources(){
 		
 		for(var i in audioResourcesURLs){
 			(function(){
-				var audio = new Audio(audioResourcesURLs[i].url);
+				var audio = new Audio();
 				audio.addEventListener("canplaythrough", function(){ 
 					if(loadedResources[audioName]) return;
 					loadedResources[audioName] = audio;
@@ -55,6 +55,7 @@ function Resources(){
 				}, false);
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
+				audio.src = audioResourcesURLs[i].url;
 			})();
 		}
 			
