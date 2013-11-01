@@ -56,6 +56,7 @@ function Resources(){
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
 				audio.src = audioResourcesURLs[i].url;
+				audio.load();
 			})();
 		}
 			
