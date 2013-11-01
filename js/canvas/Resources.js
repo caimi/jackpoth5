@@ -28,12 +28,14 @@ function Resources(){
 					var m_context = m_canvas.getContext('2d');
 					m_context.drawImage(image, 0, 0);
 					loadedResources[imageName] = m_canvas;
-										
+					//TODO: one function					
 					resourcesLoaded++;
 					var newPercetage = (resourcesLoaded/resourceCount)*100;
 					percentageListener.updateLoadedPercentage(newPercetage);
-					if(resourcesLoaded == resourceCount)
+					if(resourcesLoaded == resourceCount){
 						percentageListener.loadingComplete();
+					}
+					//--
 				};
 				image.src = imageUrl;
 			})();
@@ -46,17 +48,21 @@ function Resources(){
 					if(loadedResources[audioName]) return;
 					loadedResources[audioName] = audio;
 					loadedResources[audioName].type = "audio";
-					
+					//TODO: one function
 					resourcesLoaded++;
 					var newPercetage = (resourcesLoaded/resourceCount)*100;
 					percentageListener.updateLoadedPercentage(newPercetage);
-					if(resourcesLoaded == resourceCount)
-						percentageListener.loadingComplete();
+					if(resourcesLoaded == resourceCount){
+						percentageListener.loadingComplete();	
+					}
+					//--
 				}, false);
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
 				audio.src = audioResourcesURLs[i].url;
 				audio.load();
+				audio.volume = 0;//only preloads on play :( , so playing it with volume 0
+				audio.play();
 			})();
 		}
 			
@@ -65,8 +71,12 @@ function Resources(){
 	this.get = function(resourceName){
 		if(loadedResources[resourceName] == null)
 			throw "No such resource "+resourceName;
-		if(loadedResources[resourceName].type == "audio")
+		if(loadedResources[resourceName].type == "audio"){
+			loadedResources[resourceName].volume = 1;//reseting volume
 			loadedResources[resourceName].load();
+		}
 		return loadedResources[resourceName];
 	};
 }
+
+var resources = new Resources();

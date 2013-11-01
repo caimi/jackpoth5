@@ -18,7 +18,6 @@ var context= canvas.getContext("2d");
 context.textAlign="center";
 context.font = "italic 40pt Calibri";
 
-var resources = new Resources();
 resources.load(
 	[
 		{url:"images/canvas/white.png",name:"white",type:"image"},
