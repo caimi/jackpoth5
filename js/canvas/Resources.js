@@ -45,7 +45,7 @@ function Resources(){
 			(function(){
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
-				var audio = new Audio();
+				var audio = new Audio(audioUrl);
 				if(loadedResources[audioName]) return;
 				loadedResources[audioName] = audio;
 				loadedResources[audioName].type = "audio";
@@ -57,11 +57,7 @@ function Resources(){
 				if(resourcesLoaded == resourceCount){
 					percentageListener.loadingComplete();	
 				}
-				//--
-				
-				audio.preload = "auto";
-				audio.src = audioResourcesURLs[i].url;
-				audio.load();
+				//-- 
 			})();
 		}
 			
