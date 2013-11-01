@@ -33,7 +33,8 @@ resources.load(
 		},
 		loadingComplete: function(){
 			console.log("Done");
-			//Set play button visible
+			loadingElement.style.display="none";
+			playElement.style.display="block";
 		} 
 	}
 );

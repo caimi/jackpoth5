@@ -7,10 +7,14 @@ var isSeededElement = document.getElementById("isSeeded");
 var generationIntervalElement = document.getElementById("generationInterval");
 var ballSpeedElement = document.getElementById("ballsSpeed");
 var prizesElement = document.getElementById("prizes");
+var loadingElement = document.getElementById("loading");
+var playElement = document.getElementById("playButton");
+
+playElement.style.display="none";
 
 var gameOptions = {};
 
-document.getElementById("playButton").onclick = function(){
+playElement.onclick = function(){
  
     gameOptions.players = runnersElement.value.split('\n').sort().filter(
 		function (value, index, self) { 
