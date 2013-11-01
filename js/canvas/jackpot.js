@@ -3,7 +3,6 @@ var ballHeight = 26;
 var radius = ballWidth/2;
 var diameter = 2 * radius; 
 var diameterPowerOfTwo = diameter * diameter;
-var speed = 10;
 var elements;
 var oneSecond = 1000;
 var FPS = 30;
@@ -12,9 +11,7 @@ var running = false;
 var timePassed = 0;
 var lastLoopTime = Date.now();
 var delta = 0;
-var ballGenerationInterval = 1;
 var lastGeneratedBallTime = 0;
-var prizeCount = 1;
 
 var canvas= document.getElementById("game-canvas");
 var context= canvas.getContext("2d");
@@ -61,19 +58,6 @@ function setCanvaContextPausedScreenValues(){
 	context.fillStyle = "white";
 	context.textAlign="center";	
 }
-
-function setupCanvas(){
-	if(isSeededElement.checked){
-		context.canvas.width  = seededWidthElement.value;
-		context.canvas.height = seededHeightElement.value;
-	}else{
-		context.canvas.width  = window.innerWidth;
-		context.canvas.height = window.innerHeight;	
-	}
-	context.clearRect(0, 0, canvas.width, canvas.height);
-	setCanvaContextDefaultValues();
-}
-
 
 var enter = 13;
 var escape = 27;
@@ -228,8 +212,8 @@ Ball.prototype.die = function(){
 function randomBall(name){ 
 	return new Ball(Math.random()*canvas.width,
 					Math.random()*canvas.height,
-					(Math.random()*speed*2)-speed,
-					(Math.random()*speed*2)-speed,
+					(Math.random()*gameOptions.ballSpeed*2)-gameOptions.ballSpeed,
+					(Math.random()*gameOptions.ballSpeed*2)-gameOptions.ballSpeed,
 					name
 				);
 }
@@ -237,8 +221,8 @@ function randomBall(name){
 function killerBall(){
 	var firstKiller = new Ball(canvas.width/2,
 					canvas.height/2,
-					(Math.random()*speed*2)-speed,
-					(Math.random()*speed*2)-speed
+					(Math.random()*gameOptions.ballSpeed*2)-gameOptions.ballSpeed,
+					(Math.random()*gameOptions.ballSpeed*2)-gameOptions.ballSpeed
 				);
 	firstKiller.killer = true;
 	elements.push(firstKiller);
@@ -249,18 +233,13 @@ function getSeed(){
 }
 
 function stop(){
-	configElement.style.display="block";
-	canvas.style.display="none";
+	gameStopped();
 	running = false;
 }
 
-function restart(){	
-	configElement.style.display="none";
-	canvas.style.display="block";
-	setupCanvas();
+function restart(){
 	
-	var seed = getSeed();
-	Math.seedrandom(seed);
+	Math.seedrandom(getSeed());
 	var names = gameOptions.players;
 	
 	timePassed = 0;
@@ -293,7 +272,7 @@ function loop(){
 	}
 	timePassed+=frameLimit;
 	var timePassedInSeconds = Math.floor(timePassed/1000);
-	if(timePassedInSeconds-lastGeneratedBallTime >= ballGenerationInterval){
+	if(timePassedInSeconds-lastGeneratedBallTime >= gameOptions.generationInterval){
 		lastGeneratedBallTime = timePassedInSeconds;
 		killerBall();
 	}
@@ -331,7 +310,7 @@ function loop(){
 			elements[i].paint(delta);
 		}
 	}
-	if(liveCount == prizeCount)
+	if(liveCount == gameOptions.prizes)
 		running = false;
 	lastLoopTime = Date.now();
 	delta = 0;
