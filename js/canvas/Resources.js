@@ -43,22 +43,22 @@ function Resources(){
 		
 		for(var i in audioResourcesURLs){
 			(function(){
-				var audio = new Audio();
-				audio.addEventListener("loadeddata", function(){ //TODO: Must remove event listener afterwards
-					if(loadedResources[audioName]) return;
-					loadedResources[audioName] = audio;
-					loadedResources[audioName].type = "audio";
-					//TODO: one function
-					resourcesLoaded++;
-					var newPercetage = (resourcesLoaded/resourceCount)*100;
-					percentageListener.updateLoadedPercentage(newPercetage);
-					if(resourcesLoaded == resourceCount){
-						percentageListener.loadingComplete();	
-					}
-					//--
-				}, true);
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
+				var audio = new Audio();
+				if(loadedResources[audioName]) return;
+				loadedResources[audioName] = audio;
+				loadedResources[audioName].type = "audio";
+				//screw it, this does not preload audio
+				//TODO: one function
+				resourcesLoaded++;
+				var newPercetage = (resourcesLoaded/resourceCount)*100;
+				percentageListener.updateLoadedPercentage(newPercetage);
+				if(resourcesLoaded == resourceCount){
+					percentageListener.loadingComplete();	
+				}
+				//--
+				
 				audio.preload = "auto";
 				audio.src = audioResourcesURLs[i].url;
 				audio.load();
