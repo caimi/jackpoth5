@@ -43,7 +43,7 @@ function Resources(){
 		
 		for(var i in audioResourcesURLs){
 			(function(){
-				var audio = new Audio(audioResourcesURLs[i].url);
+				var audio = new Audio();
 				audio.addEventListener("canplaythrough", function(){ //TODO: Must remove event listener afterwards
 					if(loadedResources[audioName]) return;
 					loadedResources[audioName] = audio;
@@ -56,12 +56,12 @@ function Resources(){
 						percentageListener.loadingComplete();	
 					}
 					//--
-				});
+				}, true);
 				var audioUrl = audioResourcesURLs[i].url;
 				var audioName = audioResourcesURLs[i].name;
-				audio.volume = 0;//only preloads on play :( , so playing it with volume 0
+				audio.preload = "auto";
+				audio.src = audioResourcesURLs[i].url;
 				audio.load();
-				audio.play();
 			})();
 		}
 			
