@@ -56,7 +56,7 @@ function setCanvaContextPausedScreenValues(){
 	context.strokeStyle = "black";
 	context.lineWidth = 3;
 	context.fillStyle = "white";
-	context.textAlign="center";	
+	context.textAlign="center";
 }
 
 var enter = 13;
@@ -98,10 +98,12 @@ document.onkeydown = function(e) {
 			context.fillRect(0, 0, canvas.width, canvas.height);
 			setCanvaContextPausedScreenValues();
 			
-			var lineHeight = 40;
+			context.font = "bold 80px Arial";
+			context.fillStyle = "yellow";
 			fillStrokedText("Paused", canvas.width/2, canvas.height/2);
-			fillStrokedText("Add ball: <Enter>", canvas.width/2, canvas.height/2 + lineHeight);
-			fillStrokedText("Exit: <Esc>", canvas.width/2, canvas.height/2 + lineHeight*2);
+			setCanvaContextPausedScreenValues();
+			fillStrokedText("Add ball: <Enter>", canvas.width/2, canvas.height/2 + 80);
+			fillStrokedText("Exit: <Esc>", canvas.width/2, canvas.height/2 + 80 + 40);
 			
 			setCanvaContextDefaultValues();
 		}else{
