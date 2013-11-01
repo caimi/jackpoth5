@@ -62,6 +62,8 @@ function Resources(){
 				audio.preload = "auto";
 				audio.src = audioResourcesURLs[i].url;
 				audio.load();
+				audio.volume = 0;//only preloads on play :( , so playing it with volume 0
+				audio.play();
 			})();
 		}
 			
