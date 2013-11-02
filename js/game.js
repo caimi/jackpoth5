@@ -139,10 +139,10 @@ function update(){
 
 		for(var i=0; i<UJAPP.players.length; i++){
 			for(var j=i; j<UJAPP.players.length; j++){
-				if( isCollided( UJAPP.players[i].ball, UJAPP.players[j].ball) ) {
-					collitionEffect(UJAPP.players[i].ball, UJAPP.players[j].ball )
-					break;
-				}
+				// if( isCollided( UJAPP.players[i].ball, UJAPP.players[j].ball) ) {
+					// collitionEffect(UJAPP.players[i].ball, UJAPP.players[j].ball )
+					// break;
+				// }
 			}
 		}
 	}
@@ -265,7 +265,9 @@ function printBoardNames(){
 	var printed = 0;
 	for(var i = 0; i <UJAPP.players.length; i++){
 		if((printed*16+75) < (UJAPP.H-120)){
-			if(UJAPP.players[i].ball.status == UJAPP.READY){
+			if(UJAPP.players[i].ball.status == UJAPP.READY){ 
+				if(UJAPP.players[i].color == undefined)
+					UJAPP.players[i].color = "000000";
 				UJAPP.players[i].board.textColor(UJAPP.players[i].color);
 				UJAPP.players[i].board.text(function(){return UJAPP.players[i].name});
 				UJAPP.players[i].board.attr({x: 25, y:75+(printed*16), w:200, h: 20})
