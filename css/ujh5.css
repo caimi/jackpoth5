@@ -1,0 +1,12 @@
+.toggle-box { border-bottom: 1px solid #492605; border-top: 1px solid #AF6014; width: 700px}
+.toggle-box div.title{ background-color: #87480C; padding: 0px; border-radius: 0; color:#FFCC33; font-family: tahoma; height: 30px; line-height: 30px; font-size: 16px}
+.toggle-box div.title i.caret{ float: right; font-size: 14px; line-height: 30px; margin-right: 10px;}
+.toggle-box div.body { height: auto; padding: 5px; color:#63200E; border: solid 1px #87480C; display: none; font-size: 14px; max-height: 500px; overflow-y: auto }
+.toggle-box div.topic-icon {background-color: #C7660A; width: 30px; display: inline-block; float: left; text-align: center; height: 30px;  line-height: 30px}
+.toggle-box span{margin-left: 5px}
+
+.container {overflow-y: scroll; display: inline-block; max-height: 300px}
+
+p {font-family: tahoma; }
+
+

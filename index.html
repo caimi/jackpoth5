@@ -4,13 +4,57 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="js/crafty.js"></script>
-    <script type="text/javascript" src="js/scenes.js"></script>
-    <script type="text/javascript" src="js/game.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="js/jackpot.js"></script>
+    <script type="text/javascript" src="js/scenes/loading.js"></script>
+    <script type="text/javascript" src="js/scenes/arena.js"></script>
+    <script type="text/javascript" src="js/scenes/splash.js"></script>
+    <script type="text/javascript" src="js/scenes/names.js"></script>
+    <script type="text/javascript" src="js/scenes/conf.js"></script>
+    <script type="text/javascript" src="js/scenes/help.js"></script>
+    <script type="text/javascript" src="js/scenes/credits.js"></script>
+    <script type="text/javascript" src="js/scenes/replay.js"></script>
+    <script type="text/javascript" src="js/scenes/check.js"></script>
+    <script type="text/javascript" src="js/seedrandom.js"></script>
+    <script type="text/javascript" src="js/km-api.js"></script>
+    <script type="text/javascript" src="js/components.js"></script>
+    <script type="text/javascript" src="js/sha1.js"></script>
+    <script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="css/ujh5.css">
+    <link href='http://fonts.googleapis.com/css?family=Days+One' rel='stylesheet' type='text/css'>
+
+    
     <title>Ultimate Jackpot</title>
     <style type="text/css">
     	body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px; }
-   	 	body {background-color:#a1a1a1 }
-    	#cr-stage { border:0px solid black; margin:5px auto; color:white; background-color:#FFFFFF }
+   	 	body {background-color:#111111; background-image: url('images/bg-body.png') }
+    	#cr-stage { border:0px solid #f1f1f1; margin:0px auto; color:white; background-color:#111111;background-image: url('images/bg-body.png');}
+    	#upload-file-container {
+           background-image: url('images/start.png') no-repeat;
+        }
+        
+        #upload-file-container input {
+           filter: alpha(opacity=1);
+           opacity: 1;
+           width: 440px;
+           height: 21px;
+           font-size: 12px;
+           background-color: rgba(0,0,0,0.3)
+        }
+        
+        .names {font-family: tahoma; font-size: 10px; color: #63200e; width: 700px; height: 200px;}
+        .names td {background-color: rgba(255, 200, 48, 0.5); width: 130px; padding: 5px}
+        .names tr:nth-child(2n){background-color: rgba(256,256,256, 0.5)}
+        .alert{ width: 70%;  margin: auto; border: 1px solid #f1f4f1; margin: auto; background-color: rgba(0, 0, 0, 0.6); font-family: tahoma; font-size: 12px; box-shadow: 3px 3px 0px rgba(0,0,0,0.5); z-index: 1}
+        .alert div.titulo { background-color: rgba(255, 255, 255, 0.8); padding: 5px; font-weight: bold; color:#63200e; }
+        .alert div.corpo { padding: 5px; color: #ffffff; font-size: 14px; text-align: center; }
+        .alert div.botao { padding: 5px; color: #ffcc33; font-size: 14px; text-align: center; }
+        .alert div.botao span {cursor: pointer; display: inline-block; width: 50px; background-color: #ffcc33; padding: 5px; color: #63200e; border: 1px solid #63200e; margin: 5px; display: inline-block; text-decoration: none}
+        .alert a.botao {text-align: center; cursor: pointer; width: 50px; background-color: #ffcc33; padding: 5px; color: #63200e; border: 1px solid #63200e; margin: 5px; display: inline-block; text-decoration: none; font-weight: bold}
+        #nameOfPlayers{ background-color: #975313; color: #ffffff; font-family: tahoma; font-size: 15px; font-weight: normal; border: 3px solid #87480C; }
+        .config {width: 200px; height: 30px; background-color: rgba(0, 0, 0, 0.1); border: 1px solid #87480C; font-family: 'tahoma'; font-size: 18px; color: #87480C; padding: 0 5px;  }
+        .button-color{width: 21px; height: 21px; border: none}
     </style>
 </head>
 <body>
